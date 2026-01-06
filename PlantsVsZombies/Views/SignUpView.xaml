@@ -1,0 +1,34 @@
+<UserControl x:Class="PlantsVsZombies.Views.SignUpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.DataContext>
+        <viewModels:SignUpViewModel/>
+    </UserControl.DataContext>
+    
+    <Grid Background="#FF2D5016">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+            <TextBlock Text="Sign Up" FontSize="32" FontWeight="Bold" 
+                       Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+            
+            <TextBlock Text="Login:" Foreground="White" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding Login}" Margin="0,0,0,20" Padding="5"/>
+            
+            <TextBlock Text="Password:" Foreground="White" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="PasswordBox" Margin="0,0,0,20" Padding="5"/>
+            
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" 
+                       Margin="0,0,0,10" TextWrapping="Wrap" MinHeight="30"/>
+            
+            <Button x:Name="SignUpCommandButton" Content="Sign Up" Command="{Binding SignUpCommand}" 
+                    Margin="0,0,0,10" Padding="10" FontSize="16"/>
+            <Button Content="Back to Sign In" Command="{Binding BackToSignInCommand}" 
+                    Padding="10" FontSize="16"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

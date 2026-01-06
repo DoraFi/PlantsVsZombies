@@ -1,0 +1,114 @@
+<UserControl x:Class="PlantsVsZombies.Views.GameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
+             xmlns:models="clr-namespace:PlantsVsZombies.Models"
+             xmlns:services="clr-namespace:PlantsVsZombies.Services"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
+             mc:Ignorable="d" 
+             DataContext="{x:Type viewModels:GameViewModel}"
+             d:DesignHeight="600" d:DesignWidth="1000">
+    
+    <UserControl.Resources>
+        <converters:PlantCostConverter x:Key="PlantCostConverter"/>
+        <converters:CanAffordConverter x:Key="CanAffordConverter"/>
+    </UserControl.Resources>
+    
+    <Grid>
+        <!-- Game Field Background -->
+        <Canvas x:Name="GameField" Background="#FF87CEEB" AllowDrop="True"
+                DragOver="GameField_DragOver" Drop="GameField_Drop">
+            <!-- Grid lines for cells -->
+            <Canvas.Children>
+                <!-- Plants will be rendered here -->
+                <!-- Zombies will be rendered here -->
+                <!-- Bullets will be rendered here -->
+                <!-- Suns will be rendered here -->
+            </Canvas.Children>
+        </Canvas>
+        
+        <!-- Plant Shop (Top Left) -->
+        <Border Background="#FF4A4A4A" Padding="10" 
+                HorizontalAlignment="Left" VerticalAlignment="Top" 
+                Margin="10" CornerRadius="5">
+            <ItemsControl ItemsSource="{Binding AvailablePlants}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:PlantType}">
+                        <Border x:Name="PlantShopItem" 
+                                Background="#FF2D5016" Margin="5" Padding="10" 
+                                CornerRadius="3" Cursor="Hand"
+                                MouseLeftButtonDown="PlantShopItem_MouseLeftButtonDown"
+                                MouseMove="PlantShopItem_MouseMove"
+                                MouseLeave="PlantShopItem_MouseLeave">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Converter={StaticResource PlantCostConverter}}" 
+                                           Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding}" Foreground="White" FontSize="12" 
+                                           HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        
+        <!-- Menu Button (Top Right) -->
+        <Button Content="Menu" Command="{Binding ToggleMenuCommand}" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="10" Padding="10,5"/>
+        
+        <!-- Score and Difficulty (Bottom Right) -->
+        <Border Background="#FF4A4A4A" Padding="10" 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="10" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="{Binding Session.Score, StringFormat='Score: {0:F1}'}" 
+                           Foreground="White" FontSize="14"/>
+                <TextBlock Text="{Binding Session.Difficulty, StringFormat='Difficulty: {0}'}" 
+                           Foreground="White" FontSize="14"/>
+                <TextBlock Text="{Binding Session.SunBalance, StringFormat='Sun: {0}'}" 
+                           Foreground="Yellow" FontSize="14"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Menu Overlay -->
+        <Border Background="#AA000000" Visibility="{Binding IsMenuVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="#FF2D5016" Padding="30" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    CornerRadius="10">
+                <StackPanel>
+                    <TextBlock Text="Game Menu" FontSize="24" FontWeight="Bold" 
+                               Foreground="White" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                    <Button Content="Continue Game" Command="{Binding ContinueGameCommand}" 
+                            Margin="0,0,0,10" Padding="15,10" FontSize="16" Width="200"/>
+                    <Button Content="Quit Game" Command="{Binding QuitGameCommand}" 
+                            Padding="15,10" FontSize="16" Width="200"/>
+                </StackPanel>
+            </Border>
+        </Border>
+        
+        <!-- Notification -->
+        <Border Background="#FF4CAF50" Padding="20" CornerRadius="5"
+                HorizontalAlignment="Center" VerticalAlignment="Top" 
+                Margin="0,50,0,0"
+                Visibility="{Binding ShowNotification, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="{Binding NotificationMessage}" Foreground="White" 
+                       FontSize="18" FontWeight="Bold"/>
+        </Border>
+        
+        <!-- Drag Preview -->
+        <Border x:Name="DragPreview" Visibility="Collapsed" 
+                Background="#80FF0000" BorderBrush="Red" BorderThickness="2"
+                Width="80" Height="80" CornerRadius="5"
+                IsHitTestVisible="False"/>
+    </Grid>
+</UserControl>

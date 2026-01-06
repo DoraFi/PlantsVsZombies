@@ -1,0 +1,56 @@
+{
+  "Field": {
+    "Rows": 5,
+    "Columns": 9,
+    "CellSize": 80
+  },
+  "Plants": {
+    "Shooter1": {
+      "Health": 100,
+      "Cost": 100,
+      "ShootDelay": 1.5,
+      "BulletsPerSpray": 1,
+      "BulletSpeed": 500
+    },
+    "Shooter2": {
+      "Health": 100,
+      "Cost": 200,
+      "ShootDelay": 1.5,
+      "BulletsPerSpray": 2,
+      "BulletSpeed": 500
+    },
+    "Shield": {
+      "Health": 700,
+      "Cost": 50
+    },
+    "Generator": {
+      "Health": 100,
+      "Cost": 50,
+      "SunGenerationInterval": 10.0,
+      "SunDropRange": 0.5,
+      "SunValue": 50
+    }
+  },
+  "Zombies": {
+    "GirlZombie": {
+      "Health": 100,
+      "Speed": 30,
+      "Damage": 10
+    },
+    "BoyZombie": {
+      "Health": 150,
+      "Speed": 15,
+      "Damage": 25
+    }
+  },
+  "Game": {
+    "ZombieSpawnMinDelay": 0.2,
+    "SunFallInterval": 10.0,
+    "SunValue": 50,
+    "SunPickupTimeout": 7.0,
+    "DifficultyIncreaseInterval": 30.0,
+    "InitialDifficulty": 1,
+    "MaxDifficulty": 10,
+    "ZombiesPerDifficulty": 2
+  }
+}

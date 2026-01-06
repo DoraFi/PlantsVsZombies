@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="SharpVectors.Reloaded" Version="1.8.5" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,6 +24,11 @@
       <Reference Include="CommunityToolkit.Mvvm">
         <HintPath>bin\Debug\net8.0-windows\CommunityToolkit.Mvvm.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Assets\Icons\Basic.svg" />
+      <Resource Include="Assets\Icons\Sand.svg" />
     </ItemGroup>
 
 </Project>

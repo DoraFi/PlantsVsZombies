@@ -130,15 +130,11 @@ public partial class GameViewModel : BaseViewModel
         OnPropertyChanged(nameof(Suns));
     }
 
-    public void PlacePlant(int row, int column)
+    public void PlacePlant(PlantType plantType, int row, int column)
     {
-        if (SelectedPlantType == null)
-            return;
-
-        if (_gameService.CanPlacePlant(Session, row, column, SelectedPlantType.Value))
+        if (_gameService.CanPlacePlant(Session, row, column, plantType))
         {
-            _gameService.PlacePlant(Session, row, column, SelectedPlantType.Value);
-            SelectedPlantType = null;
+            _gameService.PlacePlant(Session, row, column, plantType);
             OnPropertyChanged(nameof(Plants));
         }
     }

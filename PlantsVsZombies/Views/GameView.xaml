@@ -8,6 +8,7 @@
              xmlns:services="clr-namespace:PlantsVsZombies.Services"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
+             xmlns:wpf="clr-namespace:Svg.Wpf;assembly=Svg.Wpf"
              mc:Ignorable="d" 
              DataContext="{x:Type viewModels:GameViewModel}"
              d:DesignHeight="600" d:DesignWidth="1000">
@@ -19,8 +20,11 @@
     
     <Grid>
         <!-- Game Field Background -->
+        
+        
         <Canvas x:Name="GameField" Background="#FF87CEEB" AllowDrop="True"
-                DragOver="GameField_DragOver" Drop="GameField_Drop">
+                DragOver="GameField_DragOver" Drop="GameField_Drop"
+                DragEnter="GameField_DragEnter" DragLeave="GameField_DragLeave">
             <!-- Grid lines for cells -->
             <Canvas.Children>
                 <!-- Plants will be rendered here -->
@@ -106,9 +110,15 @@
         </Border>
         
         <!-- Drag Preview -->
-        <Border x:Name="DragPreview" Visibility="Collapsed" 
-                Background="#80FF0000" BorderBrush="Red" BorderThickness="2"
-                Width="80" Height="80" CornerRadius="5"
-                IsHitTestVisible="False"/>
+        <Canvas x:Name="DragPreviewCanvas" IsHitTestVisible="False">
+            <Border x:Name="DragPreview" Visibility="Collapsed" 
+                    BorderBrush="White" BorderThickness="2"
+                    CornerRadius="5"
+                    IsHitTestVisible="False">
+                <TextBlock x:Name="DragPreviewText" Foreground="White" FontSize="10"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          TextAlignment="Center"/>
+            </Border>
+        </Canvas>
     </Grid>
 </UserControl>

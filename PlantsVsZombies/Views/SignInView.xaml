@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
+             xmlns:wpf="clr-namespace:Svg.Wpf;assembly=Svg.Wpf"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
@@ -11,7 +13,9 @@
         <viewModels:SignInViewModel/>
     </UserControl.DataContext>
     
-    <Grid Background="#FF2D5016">
+    <Grid Background="Transparent">
+        
+        
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
             <TextBlock Text="Plants vs Zombies" FontSize="32" FontWeight="Bold" 
                        Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,40"/>
@@ -30,5 +34,8 @@
             <Button Content="Sign Up" Command="{Binding NavigateToSignUpCommand}" 
                     Padding="10" FontSize="16"/>
         </StackPanel>
+        
+        <svgc:SvgControl Source="/Assets/Icons/Basic.svg"
+/>
     </Grid>
 </UserControl>

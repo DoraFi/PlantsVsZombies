@@ -400,12 +400,19 @@ public class GameService
         if (currentTime - session.LastSunFallTime >= _config.Game.SunFallInterval)
         {
             var sunX = _random.NextDouble() * (_config.Field.Columns * _config.Field.CellSize - 20);
+            var targetY = 50 + _random.NextDouble() * (_config.Field.Rows * _config.Field.CellSize - 100);
             var sun = new Sun
             {
+                StartX = sunX,
+                StartY = 0,
                 X = sunX,
                 Y = 0,
+                TargetX = sunX,
+                TargetY = targetY,
+                VelocityY = 0,
                 SpawnTime = currentTime,
-                IsFromGenerator = false
+                IsFromGenerator = false,
+                IsAnimating = true
             };
             session.Suns.Add(sun);
             session.LastSunFallTime = currentTime;

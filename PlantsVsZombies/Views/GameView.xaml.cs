@@ -155,9 +155,12 @@ public partial class GameView : UserControl
     {
         var timer = new System.Windows.Threading.DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(16)
+            Interval = TimeSpan.FromMilliseconds(16) // ~60 FPS for smooth animations
         };
-        timer.Tick += (s, e) => RenderGame();
+        timer.Tick += (s, e) => 
+        {
+            RenderGame();
+        };
         timer.Start();
     }
 
@@ -240,7 +243,7 @@ public partial class GameView : UserControl
                 GameField.Children.Add(ellipse);
             }
 
-            // Render suns with animations
+            // Render suns with animations - use actual animated positions
             foreach (var sun in _viewModel.Suns)
             {
                 var ellipse = new Ellipse
@@ -260,8 +263,9 @@ public partial class GameView : UserControl
                     Cursor = Cursors.Hand,
                     Tag = "Sun"
                 };
-                Canvas.SetLeft(ellipse, sun.X);
-                Canvas.SetTop(ellipse, sun.Y);
+                // Use current animated position (centered)
+                Canvas.SetLeft(ellipse, sun.X - 15);
+                Canvas.SetTop(ellipse, sun.Y - 15);
                 ellipse.MouseLeftButtonDown += (s, e) =>
                 {
                     var pos = e.GetPosition(GameField);
@@ -319,12 +323,72 @@ public partial class GameView : UserControl
             if (distance > 5) // Start dragging after 5 pixels
             {
                 _isDragging = true;
+                
+                // Show drag preview
+                ShowDragPreview(_draggedPlantType.Value, currentPoint);
+                
                 DragDrop.DoDragDrop(element, _draggedPlantType.Value, DragDropEffects.Move);
+                
+                // Hide drag preview
+                HideDragPreview();
+                
                 element.ReleaseMouseCapture();
                 _draggedPlantType = null;
                 _isDragging = false;
             }
         }
+    }
+    
+    private void ShowDragPreview(PlantType plantType, Point position)
+    {
+        DragPreview.Visibility = Visibility.Visible;
+        var brush = GetPlantColor(plantType);
+        if (brush is SolidColorBrush solidBrush)
+        {
+            DragPreview.Background = new SolidColorBrush(solidBrush.Color) { Opacity = 0.7 };
+        }
+        else
+        {
+            DragPreview.Background = new SolidColorBrush(Colors.Gray) { Opacity = 0.7 };
+        }
+        DragPreview.Width = _config.Field.CellSize;
+        DragPreview.Height = _config.Field.CellSize;
+        
+        // Set preview text
+        DragPreviewText.Text = plantType.ToString().Substring(0, Math.Min(3, plantType.ToString().Length));
+        
+        // Position near cursor initially
+        UpdateDragPreviewPosition(plantType, position);
+    }
+    
+    private void UpdateDragPreviewPosition(PlantType plantType, Point position)
+    {
+        if (DragPreview.Visibility == Visibility.Visible)
+        {
+            // Show which cell it will be placed in
+            var fieldPos = Mouse.GetPosition(GameField);
+            var cellSize = _config.Field.CellSize;
+            var row = (int)(fieldPos.Y / cellSize);
+            var col = (int)(fieldPos.X / cellSize);
+            
+            if (row >= 0 && row < _config.Field.Rows && col >= 0 && col < _config.Field.Columns)
+            {
+                // Show preview at the cell position
+                Canvas.SetLeft(DragPreview, col * cellSize);
+                Canvas.SetTop(DragPreview, row * cellSize);
+            }
+            else
+            {
+                // Position near cursor if outside field
+                Canvas.SetLeft(DragPreview, position.X - _config.Field.CellSize / 2);
+                Canvas.SetTop(DragPreview, position.Y - _config.Field.CellSize / 2);
+            }
+        }
+    }
+    
+    private void HideDragPreview()
+    {
+        DragPreview.Visibility = Visibility.Collapsed;
     }
 
     private void PlantShopItem_MouseLeave(object sender, MouseEventArgs e)
@@ -337,13 +401,33 @@ public partial class GameView : UserControl
         }
     }
 
+    private void GameField_DragEnter(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(typeof(PlantType)))
+        {
+            var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
+            var pos = e.GetPosition(this);
+            ShowDragPreview(plantType, pos);
+        }
+    }
+
     private void GameField_DragOver(object sender, DragEventArgs e)
     {
         if (e.Data.GetDataPresent(typeof(PlantType)))
         {
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
+            
+            // Update drag preview position
+            var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
+            var pos = e.GetPosition(this);
+            UpdateDragPreviewPosition(plantType, pos);
         }
+    }
+
+    private void GameField_DragLeave(object sender, DragEventArgs e)
+    {
+        HideDragPreview();
     }
 
     private void GameField_Drop(object sender, DragEventArgs e)
@@ -353,13 +437,16 @@ public partial class GameView : UserControl
             var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
             var pos = e.GetPosition(GameField);
             var cellSize = _config.Field.CellSize;
+            // Place on the cell at/below the cursor position
             var row = (int)(pos.Y / cellSize);
             var col = (int)(pos.X / cellSize);
 
             if (row >= 0 && row < _config.Field.Rows && col >= 0 && col < _config.Field.Columns)
             {
-                _viewModel.PlacePlant(row, col);
+                _viewModel.PlacePlant(plantType, row, col);
             }
+            
+            HideDragPreview();
         }
     }
 }

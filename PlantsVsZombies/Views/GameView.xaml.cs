@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Services;
 using PlantsVsZombies.ViewModels;
+using SharpVectors.Converters;
 
 namespace PlantsVsZombies.Views;
 
@@ -229,18 +230,18 @@ public partial class GameView : UserControl
             // Render bullets
             foreach (var bullet in _viewModel.Bullets)
             {
-                var ellipse = new Ellipse
+                var bulletVisual = new SvgControl()
                 {
+                    Source = new Uri("/Assets/Icons/Shooter1_Bullet"),
                     Width = 10,
                     Height = 10,
-                    Fill = Brushes.Yellow,
-                    Stroke = Brushes.Orange,
-                    StrokeThickness = 1,
-                    Tag = "Bullet"
                 };
-                Canvas.SetLeft(ellipse, bullet.X - 5);
-                Canvas.SetTop(ellipse, bullet.Row * cellSize + cellSize / 2 - 5);
-                GameField.Children.Add(ellipse);
+                
+                
+                
+                Canvas.SetLeft(bulletVisual, bullet.X - 5);
+                Canvas.SetTop(bulletVisual, bullet.Row * cellSize + cellSize / 2 - 5);
+                GameField.Children.Add(bulletVisual);
             }
 
             // Render suns with animations - use actual animated positions

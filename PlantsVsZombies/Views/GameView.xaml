@@ -8,7 +8,6 @@
              xmlns:services="clr-namespace:PlantsVsZombies.Services"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
-             xmlns:wpf="clr-namespace:Svg.Wpf;assembly=Svg.Wpf"
              mc:Ignorable="d" 
              DataContext="{x:Type viewModels:GameViewModel}"
              d:DesignHeight="600" d:DesignWidth="1000">

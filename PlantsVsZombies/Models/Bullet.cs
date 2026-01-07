@@ -6,8 +6,8 @@ public class Bullet : INotifyPropertyChanged
 {
     private double _x;
 
-    public int Row { get; set; }
-    public double X
+    public required int Row { get; init; }
+    public required double X
     {
         get => _x;
         set
@@ -16,10 +16,12 @@ public class Bullet : INotifyPropertyChanged
             OnPropertyChanged(nameof(X));
         }
     }
+    
+    public required PlantType ParentPlantType { get; init; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged(string propertyName)
+    protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

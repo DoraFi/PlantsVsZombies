@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
              xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:views="clr-namespace:PlantsVsZombies.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     

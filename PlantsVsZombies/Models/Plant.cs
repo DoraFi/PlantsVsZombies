@@ -1,15 +1,16 @@
 using System.ComponentModel;
+using PlantsVsZombies.VisualControls;
 
 namespace PlantsVsZombies.Models;
 
-public class Plant : INotifyPropertyChanged
+public abstract class Plant : INotifyPropertyChanged
 {
     private int _health;
     private PlantState _state = PlantState.Idle;
 
-    public PlantType Type { get; set; }
-    public int Row { get; set; }
-    public int Column { get; set; }
+    public FieldCell? FieldCell { get; set; }
+    public int Row => FieldCell?.Row ?? 0;
+    public int Column => FieldCell?.Column ?? 0;
 
     public int Health
     {
@@ -35,6 +36,9 @@ public class Plant : INotifyPropertyChanged
     public double LastSunGenerationTime { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+    
+    public abstract PlantType Type { get; }
+    public abstract string Title { get; }
 
     protected virtual void OnPropertyChanged(string propertyName)
     {

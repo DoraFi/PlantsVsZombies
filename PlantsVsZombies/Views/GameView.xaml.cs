@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Services;
 using PlantsVsZombies.ViewModels;
+using PlantsVsZombies.VisualControls;
 
 namespace PlantsVsZombies.Views;
 
@@ -64,19 +66,47 @@ public partial class GameView : UserControl
         {
             for (int j = 0; j < cols; j++)
             {
-                var rect = new Rectangle()
+                var rect = new FieldCell()
                 {
+                    AllowDrop = true,
                     Width = _cellSize,
                     Height = _cellSize,
-                    Stroke = _viewModel.Session.Location.GetLocationCellColor(i, j),
-                    StrokeThickness = 2
+                    Background = _viewModel.Session.Location.GetLocationCellColor(i, j),
+                    Row = i,
+                    Column = j,
                 };
                 
                 GameField.Children.Add(rect);
                 Canvas.SetLeft(rect, j * _cellSize);
                 Canvas.SetTop(rect, i * _cellSize);
+                
+                rect.DragEnter += RectOnDragEnter;
+                rect.DragLeave += RectOnDragLeave;
+                rect.Drop += RectOnDrop;
             }
         }
+    }
+
+    private void RectOnDrop(object sender, DragEventArgs e)
+    {
+        Debug.WriteLine(nameof(RectOnDrop));
+        if (e.Data.GetDataPresent(typeof(PlantType)) && sender is FieldCell fieldCell)
+        {
+            var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
+            fieldCell.PlacePlant(plantType);
+            _viewModel.PlacePlant(plantType, fieldCell.Row, fieldCell.Column);
+            HideDragPreview();
+        }
+    }
+
+    private void RectOnDragLeave(object sender, DragEventArgs e)
+    {
+        Debug.WriteLine(nameof(RectOnDragLeave));
+    }
+
+    private void RectOnDragEnter(object sender, DragEventArgs e)
+    {
+        
     }
 
     private void SetupEventHandlers()

@@ -4,9 +4,7 @@ using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Services;
 using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -43,12 +41,12 @@ public partial class GameViewModel : BaseViewModel
     public ObservableCollection<Bullet> Bullets => Session.Bullets;
     public ObservableCollection<Sun> Suns => Session.Suns;
 
-    public List<PlantType> AvailablePlants { get; } = new()
+    public List<Plant> AvailablePlants { get; } = new()
     {
-        PlantType.Shooter1,
-        PlantType.Shooter2,
-        PlantType.Shield,
-        PlantType.Generator
+        new PlantShooter1(),
+        new PlantShooter2(),
+        new PlantShield(),
+        new PlantGenerator()
     };
 
     public bool CanAffordPlant(PlantType plantType)

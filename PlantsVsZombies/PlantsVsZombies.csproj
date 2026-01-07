@@ -37,6 +37,27 @@
         <Resource Include="Assets\Icons\BasicBushLeft.png" />
         <Resource Include="Assets\Icons\BasicBushRight.png" />
         <Resource Include="Assets\Icons\BasicBushTopBottom.png" />
+        <None Remove="Assets\Icons\shield_body.png" />
+        <Resource Include="Assets\Icons\shield_body.png" />
+        <None Remove="Assets\Icons\shooter1_body.png" />
+        <Resource Include="Assets\Icons\shooter1_body.png" />
+        <None Remove="Assets\Icons\shooter1_head.png" />
+        <None Remove="Assets\Icons\shooter2_body.png" />
+        <Resource Include="Assets\Icons\shooter2_body.png" />
+        <None Remove="Assets\Icons\shooter2_hand_left.png" />
+        <Resource Include="Assets\Icons\shooter2_hand_left.png" />
+        <None Remove="Assets\Icons\shooter2_hand_right.png" />
+        <Resource Include="Assets\Icons\shooter2_hand_right.png" />
+        <None Remove="Assets\Icons\generator_body.png" />
+        <Resource Include="Assets\Icons\generator_body.png" />
+        <None Remove="Assets\Icons\generator_head.png" />
+        <Resource Include="Assets\Icons\generator_head.png" />
+        <None Remove="Assets\Icons\sun_balance.png" />
+        <Resource Include="Assets\Icons\sun_balance.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Assets\Icons\shooter1_head.png" />
     </ItemGroup>
 
 </Project>

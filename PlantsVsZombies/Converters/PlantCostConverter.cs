@@ -15,7 +15,7 @@ public class PlantCostConverter : IValueConverter
             {
                 var config = ConfigService.GetConfig();
                 var plantConfig = config.Plants[plantType.ToString()];
-                return $"${plantConfig.Cost}";
+                return $"{plantConfig.Cost}";
             }
             catch
             {

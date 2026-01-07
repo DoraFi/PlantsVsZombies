@@ -36,35 +36,15 @@
                 </Grid.RowDefinitions>
                 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Image Grid.RowSpan="3" Grid.Column="2" Grid.Row="0" x:Name="BushRightImage" Stretch="UniformToFill"/>
-                <Image HorizontalAlignment="Right" RenderTransformOrigin="0.5, 0.5" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="BushLeftImage" Stretch="Uniform"/>
-                <Image RenderTransformOrigin="0.5, 0.5" Grid.Row="0" Grid.Column="1" x:Name="BushTopImage" Stretch="UniformToFill">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <RotateTransform Angle="180"/>
-                            <ScaleTransform ScaleX="1.12" ScaleY="1.35"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-                <Image Grid.Row="2" Grid.Column="1" x:Name="BushBottomImage" Stretch="UniformToFill" RenderTransformOrigin="0.5, 0.5">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="1.07" ScaleY="1.2"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-
-                <Canvas x:Name="GameField" AllowDrop="True"
-                        Grid.Row="1" Grid.Column="1"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Right"
-                        DragOver="GameField_DragOver" Drop="GameField_Drop"
-                        DragEnter="GameField_DragEnter" DragLeave="GameField_DragLeave">    
+                <Canvas x:Name="GameField"
+                         Grid.Row="1" Grid.Column="1"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Right">
                     <!-- Grid lines for cells -->
                     <Canvas.Children>
                         <!-- Plants will be rendered here -->
@@ -73,6 +53,35 @@
                         <!-- Suns will be rendered here -->
                     </Canvas.Children>
                 </Canvas>
+
+                <Image Grid.RowSpan="3" Grid.Column="2" Grid.Row="0" x:Name="BushRightImage" Stretch="UniformToFill"/>
+                <Image HorizontalAlignment="Right" 
+                       VerticalAlignment="Stretch" 
+                       RenderTransformOrigin="0.5, 0.5" 
+                       Grid.Column="0" Grid.Row="0" 
+                       Grid.RowSpan="3" 
+                       x:Name="BushLeftImage" 
+                       Stretch="UniformToFill" Width="150"/>
+                <Image RenderTransformOrigin="0.5, 0.5" Grid.Row="0" Grid.Column="1" x:Name="BushTopImage" Stretch="UniformToFill">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="1.12" ScaleY="1.5"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <Image Grid.Row="2" 
+                       Grid.Column="1" 
+                       x:Name="BushBottomImage" 
+                       Stretch="UniformToFill" 
+                       RenderTransformOrigin="0.5, 0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="1.12" ScaleY="1.5"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
             </Grid>
 
             <!--
@@ -99,28 +108,36 @@
         </Grid>
         
         <!-- Plant Shop (Top Left) -->
-        <Border Background="#FF4A4A4A" Padding="10" 
+        <Border Background="#FFE7DB" Padding="10" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" 
-                Margin="10" CornerRadius="5">
+                Margin="10" CornerRadius="20">
+            
             <ItemsControl ItemsSource="{Binding AvailablePlants}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
+                        <StackPanel Orientation="Vertical"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:PlantType}">
+                    <DataTemplate>
                         <Border x:Name="PlantShopItem" 
-                                Background="#FF2D5016" Margin="5" Padding="10" 
-                                CornerRadius="3" Cursor="Hand"
+                                Background="#515150" Margin="5"
+                                CornerRadius="20" Cursor="Hand"
+                                Width="120"
+                                Height="120"
+                                Padding="0 15 0 0"
                                 MouseLeftButtonDown="PlantShopItem_MouseLeftButtonDown"
                                 MouseMove="PlantShopItem_MouseMove"
                                 MouseLeave="PlantShopItem_MouseLeave">
                             <StackPanel>
-                                <TextBlock Text="{Binding Converter={StaticResource PlantCostConverter}}" 
-                                           Foreground="White" FontSize="10" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding}" Foreground="White" FontSize="12" 
-                                           HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                <Viewbox Width="56" Height="56" Stretch="Uniform" 
+                                        HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center">
+                                    <ContentControl Content="{Binding}"/>
+                                </Viewbox>
+                                <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}" 
+                                           Margin="0 25 0 0"
+                                           Foreground="#FFE7DB" FontSize="12" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

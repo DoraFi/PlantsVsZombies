@@ -49,6 +49,7 @@ public class GameService
         return session.SunBalance >= plantConfig.Cost;
     }
 
+    //TODO 
     public void PlacePlant(GameSession session, int row, int column, PlantType plantType)
     {
         if (!CanPlacePlant(session, row, column, plantType))
@@ -57,18 +58,7 @@ public class GameService
         var plantConfig = GetPlantConfig(plantType);
         session.SunBalance -= plantConfig.Cost;
 
-        var plant = new Plant
-        {
-            Type = plantType,
-            Row = row,
-            Column = column,
-            Health = plantConfig.Health,
-            State = PlantState.Idle,
-            LastShootTime = 0,
-            LastSunGenerationTime = 0
-        };
-
-        session.Plants.Add(plant);
+        //session.Plants.Add(plant);
     }
 
     public void UpdateGame(GameSession session, double currentTime, double deltaTime, double cellSize)
@@ -166,7 +156,7 @@ public class GameService
                         plantInRow.Health -= zombieConfig.Damage;
                         zombie.LastDamageTime = currentTime;
 
-                        if (plantInRow.Type == PlantType.Shield)
+                        if (plantInRow is PlantShield)
                         {
                             plantInRow.State = PlantState.Active;
                         }
@@ -456,7 +446,7 @@ public class GameService
         return false;
     }
 
-    private PlantConfig GetPlantConfig(PlantType type)
+    public PlantConfig GetPlantConfig(PlantType type)
     {
         var key = type.ToString();
         return _config.Plants[key];

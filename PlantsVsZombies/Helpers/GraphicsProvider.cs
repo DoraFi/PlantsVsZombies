@@ -10,12 +10,28 @@ namespace PlantsVsZombies.Helpers;
 
 public static class GraphicsProvider
 {
-    public static Image GetPlantImage(PlantType plantType) => plantType switch
+    public static BitmapImage[] GetPlantImages(this PlantType plantType) => plantType switch
     {
-        PlantType.Generator => new Image()
-        {
-            Source = new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter1_ball.png"))
-        },
+        PlantType.Generator => 
+        [
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/generator_body.png")),
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/generator_head.png")),
+        ],
+        PlantType.Shield => 
+        [
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shield_body.png")),
+        ],
+        PlantType.Shooter1 => 
+        [
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter1_body.png")),
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter1_head.png")),
+        ],
+        PlantType.Shooter2 => 
+        [
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter2_body.png")),
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter2_hand_left.png")),
+            new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter2_hand_right.png")),
+        ],
         _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
     };
     
@@ -63,10 +79,10 @@ public static class GraphicsProvider
             case LocationType.SandBeach:
                 return type switch
                 {
-                    0 => new SolidColorBrush(Color.FromRgb(191, 161, 121)),
-                    1 => new SolidColorBrush(Color.FromRgb(227, 177, 109)),
-                    2 => new SolidColorBrush(Color.FromRgb(181, 147, 100)),
-                    _ => throw new ArgumentOutOfRangeException(nameof(locationType), locationType, null)
+                    0 => new SolidColorBrush(Color.FromRgb(244, 217, 164)),
+                    1 => new SolidColorBrush(Color.FromRgb(231, 203, 151)),
+                    2 => new SolidColorBrush(Color.FromRgb(221, 192, 141)),
+                                                                                                                _ => throw new ArgumentOutOfRangeException(nameof(locationType), locationType, null)
                 };
             case LocationType.GrassLawn:
                 return type switch

@@ -35,6 +35,12 @@ public static class GraphicsProvider
         _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
     };
     
+    public static BitmapImage GetLocationRoofImage(this LocationType locationType) => locationType switch
+    {
+        LocationType.GrassLawn => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/BasicRoof.png")),
+        LocationType.SandBeach => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/SandRoof.png")),
+        _ => throw new ArgumentOutOfRangeException(nameof(locationType), locationType, null)
+    };
     
     public static BitmapImage GetLocationImage(this LocationType locationType) => locationType switch
     {

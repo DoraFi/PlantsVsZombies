@@ -60,6 +60,7 @@ public partial class GameViewModel : BaseViewModel
         _session = session;
         _startTime = DateTime.Now;
         LocationImageSource = _session.Location.GetLocationImage();
+        RoofImageSource = _session.Location.GetLocationRoofImage();
         
         _gameTimer = new DispatcherTimer
         {
@@ -175,4 +176,5 @@ public partial class GameViewModel : BaseViewModel
     }
     
     public BitmapImage LocationImageSource { get; }
+    public BitmapImage RoofImageSource { get; }
 }

@@ -52,7 +52,7 @@ public partial class GameView : UserControl
         var rows = _config.Field.Rows;
         var cols = _config.Field.Columns;
 
-        BushLeftImage.Source = _viewModel.Session.Location.GetBushLeftImage();
+        //BushLeftImage.Source = _viewModel.Session.Location.GetBushLeftImage();
         BushTopImage.Source = _viewModel.Session.Location.GetBushTopImage();
         BushRightImage.Source = _viewModel.Session.Location.GetBushRightImage();
         BushBottomImage.Source = _viewModel.Session.Location.GetBushBottomImage();

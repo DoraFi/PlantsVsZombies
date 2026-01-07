@@ -21,13 +21,16 @@
     
     <Grid>
         <!-- Game Field Background -->
-        
+
+        <Image Source="{Binding RoofImageSource}"
+     IsHitTestVisible="False"
+        Grid.Row="1"
+        Grid.Column="0"
+     HorizontalAlignment="Left"
+     VerticalAlignment="Center"
+     Stretch="Uniform"/>
+
         <Grid>
-            <Image Source="/Assets/Icons/brains.jpg"
-                   IsHitTestVisible="False"
-                   StretchDirection="UpOnly"
-                   Stretch="UniformToFill"/>
-            
             <Grid x:Name="GameFieldBackground" HorizontalAlignment="Right">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -36,7 +39,7 @@
                 </Grid.RowDefinitions>
                 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
@@ -55,18 +58,12 @@
                 </Canvas>
 
                 <Image Grid.RowSpan="3" Grid.Column="2" Grid.Row="0" x:Name="BushRightImage" Stretch="UniformToFill"/>
-                <Image HorizontalAlignment="Right" 
-                       VerticalAlignment="Stretch" 
-                       RenderTransformOrigin="0.5, 0.5" 
-                       Grid.Column="0" Grid.Row="0" 
-                       Grid.RowSpan="3" 
-                       x:Name="BushLeftImage" 
-                       Stretch="UniformToFill" Width="150"/>
+               
                 <Image RenderTransformOrigin="0.5, 0.5" Grid.Row="0" Grid.Column="1" x:Name="BushTopImage" Stretch="UniformToFill">
                     <Image.RenderTransform>
                         <TransformGroup>
                             <RotateTransform Angle="180"/>
-                            <ScaleTransform ScaleX="1.12" ScaleY="1.5"/>
+                            <ScaleTransform ScaleX="1.12" ScaleY="1.63"/>
                         </TransformGroup>
                     </Image.RenderTransform>
                 </Image>
@@ -78,12 +75,13 @@
                     <Image.RenderTransform>
                         <TransformGroup>
                             <RotateTransform Angle="180"/>
-                            <ScaleTransform ScaleX="1.12" ScaleY="1.5"/>
+                            <ScaleTransform ScaleX="1.12" ScaleY="1.55"/>
                         </TransformGroup>
                     </Image.RenderTransform>
                 </Image>
             </Grid>
 
+           
             <!--
             <Viewbox VerticalAlignment="Stretch" HorizontalAlignment="Right" Stretch="Uniform">
                 <Viewbox.Effect>
@@ -111,38 +109,66 @@
         <Border Background="#FFE7DB" Padding="10" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" 
                 Margin="10" CornerRadius="20">
-            
-            <ItemsControl ItemsSource="{Binding AvailablePlants}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border x:Name="PlantShopItem" 
-                                Background="#515150" Margin="5"
-                                CornerRadius="20" Cursor="Hand"
-                                Width="120"
-                                Height="120"
-                                Padding="0 15 0 0"
-                                MouseLeftButtonDown="PlantShopItem_MouseLeftButtonDown"
-                                MouseMove="PlantShopItem_MouseMove"
-                                MouseLeave="PlantShopItem_MouseLeave">
-                            <StackPanel>
-                                <Viewbox Width="56" Height="56" Stretch="Uniform" 
-                                        HorizontalAlignment="Center" 
-                                        VerticalAlignment="Center">
-                                    <ContentControl Content="{Binding}"/>
-                                </Viewbox>
-                                <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}" 
-                                           Margin="0 25 0 0"
-                                           Foreground="#FFE7DB" FontSize="12" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+
+            <StackPanel Orientation="Vertical">
+                <Border Background="#515150"
+                        Padding="10"
+                        Margin="5 0 5 10"
+                        CornerRadius="20">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding Session.SunBalance}" 
+                                   VerticalAlignment="Center"
+                                    Foreground="#FFE7DB" FontSize="28" />
+
+                        <Image Source="/Assets/Icons/sun_balance.png" Width="32" Height="32"
+                               Margin="8 2 0 0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Margin="10" Background="#515150"
+                        CornerRadius="5"
+                        Height="5"/>
+
+                <ItemsControl ItemsSource="{Binding AvailablePlants}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border x:Name="PlantShopItem" 
+                                    Background="#515150" Margin="5 10"
+                                    CornerRadius="20" Cursor="Hand"
+                                    Width="120"
+                                    Height="130"
+                                    Padding="0 15 0 0"
+                                    MouseLeftButtonDown="PlantShopItem_MouseLeftButtonDown"
+                                    MouseMove="PlantShopItem_MouseMove"
+                                    MouseLeave="PlantShopItem_MouseLeave">
+                                <StackPanel>
+                                    <Viewbox Width="56" Height="56" Stretch="Uniform" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center">
+                                        <ContentControl Content="{Binding}"/>
+                                    </Viewbox>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                 Margin="0 25 0 0">
+                                    
+                                        <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="#FFE7DB" FontSize="16" />
+
+                                        <Image Source="/Assets/Icons/sun_balance.png" Width="20" Height="20"
+                                               Margin="6 2 0 0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </Border>
         
         <!-- Menu Button (Top Right) -->

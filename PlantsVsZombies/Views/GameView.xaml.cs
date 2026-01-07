@@ -2,13 +2,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
+using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Services;
 using PlantsVsZombies.ViewModels;
-using SharpVectors.Converters;
 
 namespace PlantsVsZombies.Views;
 
@@ -19,6 +18,7 @@ public partial class GameView : UserControl
     private PlantType? _draggedPlantType;
     private bool _isDragging;
     private Point _dragStartPoint;
+    private double _cellSize;
 
     public GameView(GameViewModel viewModel)
     {
@@ -27,47 +27,55 @@ public partial class GameView : UserControl
         DataContext = viewModel;
         _config = ConfigService.GetConfig();
         
+        CalculateCellSize();
         InitializeGameField();
         SetupEventHandlers();
         StartRendering();
+        this.Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void CalculateCellSize()
+    {
+        _cellSize = 150;
+        _viewModel.CellSize = _cellSize;
     }
 
     private void InitializeGameField()
     {
-        var cellSize = _config.Field.CellSize;
         var rows = _config.Field.Rows;
         var cols = _config.Field.Columns;
+
+        BushLeftImage.Source = _viewModel.Session.Location.GetBushLeftImage();
+        BushTopImage.Source = _viewModel.Session.Location.GetBushTopImage();
+        BushRightImage.Source = _viewModel.Session.Location.GetBushRightImage();
+        BushBottomImage.Source = _viewModel.Session.Location.GetBushBottomImage();
         
-        GameField.Width = cols * cellSize;
-        GameField.Height = rows * cellSize;
-        
-        // Draw grid lines
-        for (int i = 0; i <= rows; i++)
+        GameField.Width = cols * _cellSize;
+        GameField.Height = rows * _cellSize;
+        Canvas.SetTop(GameField, _cellSize);
+        Canvas.SetLeft(GameField, _cellSize);
+    
+        for (int i = 0; i < rows; i++)
         {
-            var line = new Line
+            for (int j = 0; j < cols; j++)
             {
-                X1 = 0,
-                Y1 = i * cellSize,
-                X2 = cols * cellSize,
-                Y2 = i * cellSize,
-                Stroke = Brushes.Gray,
-                StrokeThickness = 1
-            };
-            GameField.Children.Add(line);
-        }
-        
-        for (int i = 0; i <= cols; i++)
-        {
-            var line = new Line
-            {
-                X1 = i * cellSize,
-                Y1 = 0,
-                X2 = i * cellSize,
-                Y2 = rows * cellSize,
-                Stroke = Brushes.Gray,
-                StrokeThickness = 1
-            };
-            GameField.Children.Add(line);
+                var rect = new Rectangle()
+                {
+                    Width = _cellSize,
+                    Height = _cellSize,
+                    Stroke = _viewModel.Session.Location.GetLocationCellColor(i, j),
+                    StrokeThickness = 2
+                };
+                
+                GameField.Children.Add(rect);
+                Canvas.SetLeft(rect, j * _cellSize);
+                Canvas.SetTop(rect, i * _cellSize);
+            }
         }
     }
 
@@ -167,6 +175,7 @@ public partial class GameView : UserControl
 
     private void RenderGame()
     {
+        return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             // Clear previous game objects (keep grid lines)
@@ -178,22 +187,20 @@ public partial class GameView : UserControl
                 GameField.Children.Remove(element);
             }
 
-            var cellSize = _config.Field.CellSize;
-
             // Render plants
             foreach (var plant in _viewModel.Plants)
             {
                 var rect = new Rectangle
                 {
-                    Width = cellSize - 4,
-                    Height = cellSize - 4,
+                    Width = _cellSize - 4,
+                    Height = _cellSize - 4,
                     Fill = GetPlantColor(plant.Type),
                     Stroke = plant.State == PlantState.Active ? Brushes.Orange : Brushes.Black,
                     StrokeThickness = plant.State == PlantState.Active ? 3 : 2,
                     Tag = "Plant"
                 };
-                Canvas.SetLeft(rect, plant.Column * cellSize + 2);
-                Canvas.SetTop(rect, plant.Row * cellSize + 2);
+                Canvas.SetLeft(rect, plant.Column * _cellSize + 2);
+                Canvas.SetTop(rect, plant.Row * _cellSize + 2);
                 GameField.Children.Add(rect);
                 
                 var text = new TextBlock
@@ -205,8 +212,8 @@ public partial class GameView : UserControl
                     VerticalAlignment = VerticalAlignment.Center,
                     Tag = "Plant"
                 };
-                Canvas.SetLeft(text, plant.Column * cellSize + cellSize / 2 - 15);
-                Canvas.SetTop(text, plant.Row * cellSize + cellSize / 2 - 8);
+                Canvas.SetLeft(text, plant.Column * _cellSize + _cellSize / 2 - 15);
+                Canvas.SetTop(text, plant.Row * _cellSize + _cellSize / 2 - 8);
                 GameField.Children.Add(text);
             }
 
@@ -215,68 +222,68 @@ public partial class GameView : UserControl
             {
                 var rect = new Rectangle
                 {
-                    Width = cellSize - 4,
-                    Height = cellSize - 4,
+                    Width = _cellSize - 4,
+                    Height = _cellSize - 4,
                     Fill = GetZombieColor(zombie.Type),
                     Stroke = Brushes.Red,
                     StrokeThickness = 2,
                     Tag = "Zombie"
                 };
                 Canvas.SetLeft(rect, zombie.X);
-                Canvas.SetTop(rect, zombie.Row * cellSize + 2);
+                Canvas.SetTop(rect, zombie.Row * _cellSize + 2);
                 GameField.Children.Add(rect);
             }
 
             // Render bullets
             foreach (var bullet in _viewModel.Bullets)
             {
-                var bulletVisual = new SvgControl()
+                var bulletVisual = new Image()
                 {
-                    Source = new Uri("/Assets/Icons/Shooter1_Bullet"),
-                    Width = 10,
-                    Height = 10,
+                    /*
+                    Source = bullet.ParentPlantType switch
+                    {
+                        PlantType.Shooter1 => new BitmapImage(
+                            new Uri("pack://application:,,,/Assets/Icons/shooter1_ball.png")),
+                        PlantType.Shooter2 => new BitmapImage(
+                            new Uri("pack://application:,,,/Assets/Icons/shooter2_ball.png")),
+                        _ => throw new NotImplementedException(),
+                    },
+                    */
+                    Width = 24,
+                    Height = 24,
                 };
-                
-                
+                bulletVisual.StartSpinningAnimation();
                 
                 Canvas.SetLeft(bulletVisual, bullet.X - 5);
-                Canvas.SetTop(bulletVisual, bullet.Row * cellSize + cellSize / 2 - 5);
+                Canvas.SetTop(bulletVisual, bullet.Row * _cellSize + _cellSize / 2d - 5);
                 GameField.Children.Add(bulletVisual);
             }
 
             // Render suns with animations - use actual animated positions
             foreach (var sun in _viewModel.Suns)
             {
-                var ellipse = new Ellipse
+                var sunVisual = new Image()
                 {
-                    Width = 30,
-                    Height = 30,
-                    Fill = new RadialGradientBrush
-                    {
-                        GradientStops = new GradientStopCollection
-                        {
-                            new GradientStop(Colors.Yellow, 0.0),
-                            new GradientStop(Colors.Orange, 1.0)
-                        }
-                    },
-                    Stroke = Brushes.Orange,
-                    StrokeThickness = 2,
+                    Source = new BitmapImage(
+                        new Uri("pack://application:,,,/Assets/Icons/sun.png")),
+                    Width = 48,
+                    Tag = "Sun",
                     Cursor = Cursors.Hand,
-                    Tag = "Sun"
                 };
+                
                 // Use current animated position (centered)
-                Canvas.SetLeft(ellipse, sun.X - 15);
-                Canvas.SetTop(ellipse, sun.Y - 15);
-                ellipse.MouseLeftButtonDown += (s, e) =>
+                Canvas.SetLeft(sunVisual, sun.X - 15);
+                Canvas.SetTop(sunVisual, sun.Y - 15);
+                sunVisual.MouseLeftButtonDown += (s, e) =>
                 {
                     var pos = e.GetPosition(GameField);
                     _viewModel.PickupSun(pos.X, pos.Y);
                 };
-                GameField.Children.Add(ellipse);
+                GameField.Children.Add(sunVisual);
             }
         });
     }
-
+    
     private Brush GetPlantColor(PlantType type)
     {
         return type switch
@@ -352,8 +359,8 @@ public partial class GameView : UserControl
         {
             DragPreview.Background = new SolidColorBrush(Colors.Gray) { Opacity = 0.7 };
         }
-        DragPreview.Width = _config.Field.CellSize;
-        DragPreview.Height = _config.Field.CellSize;
+        DragPreview.Width = _cellSize;
+        DragPreview.Height = _cellSize;
         
         // Set preview text
         DragPreviewText.Text = plantType.ToString().Substring(0, Math.Min(3, plantType.ToString().Length));
@@ -368,21 +375,20 @@ public partial class GameView : UserControl
         {
             // Show which cell it will be placed in
             var fieldPos = Mouse.GetPosition(GameField);
-            var cellSize = _config.Field.CellSize;
-            var row = (int)(fieldPos.Y / cellSize);
-            var col = (int)(fieldPos.X / cellSize);
+            var row = (int)(fieldPos.Y / _cellSize);
+            var col = (int)(fieldPos.X / _cellSize);
             
             if (row >= 0 && row < _config.Field.Rows && col >= 0 && col < _config.Field.Columns)
             {
                 // Show preview at the cell position
-                Canvas.SetLeft(DragPreview, col * cellSize);
-                Canvas.SetTop(DragPreview, row * cellSize);
+                Canvas.SetLeft(DragPreview, col * _cellSize);
+                Canvas.SetTop(DragPreview, row * _cellSize);
             }
             else
             {
                 // Position near cursor if outside field
-                Canvas.SetLeft(DragPreview, position.X - _config.Field.CellSize / 2);
-                Canvas.SetTop(DragPreview, position.Y - _config.Field.CellSize / 2);
+                Canvas.SetLeft(DragPreview, position.X - _cellSize / 2);
+                Canvas.SetTop(DragPreview, position.Y - _cellSize / 2);
             }
         }
     }
@@ -437,10 +443,9 @@ public partial class GameView : UserControl
         {
             var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
             var pos = e.GetPosition(GameField);
-            var cellSize = _config.Field.CellSize;
             // Place on the cell at/below the cursor position
-            var row = (int)(pos.Y / cellSize);
-            var col = (int)(pos.X / cellSize);
+            var row = (int)(pos.Y / _cellSize);
+            var col = (int)(pos.X / _cellSize);
 
             if (row >= 0 && row < _config.Field.Rows && col >= 0 && col < _config.Field.Columns)
             {

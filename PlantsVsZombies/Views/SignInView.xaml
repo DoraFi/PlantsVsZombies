@@ -12,9 +12,7 @@
         <viewModels:SignInViewModel/>
     </UserControl.DataContext>
     
-    <Grid Background="Transparent">
-        
-        
+    <Grid Background="DarkSeaGreen">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
             <TextBlock Text="Plants vs Zombies" FontSize="32" FontWeight="Bold" 
                        Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,40"/>

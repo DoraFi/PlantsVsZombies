@@ -71,22 +71,22 @@ public class GameService
         session.Plants.Add(plant);
     }
 
-    public void UpdateGame(GameSession session, double currentTime, double deltaTime)
+    public void UpdateGame(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
         // Update score
         session.Score += deltaTime;
 
         // Spawn zombies
-        SpawnZombies(session, currentTime);
+        SpawnZombies(session, currentTime, cellSize);
 
         // Update zombies
-        UpdateZombies(session, currentTime, deltaTime);
+        UpdateZombies(session, currentTime, deltaTime, cellSize);
 
         // Update plants (shooting, sun generation)
-        UpdatePlants(session, currentTime, deltaTime);
+        UpdatePlants(session, currentTime, deltaTime, cellSize);
 
         // Update bullets
-        UpdateBullets(session, deltaTime);
+        UpdateBullets(session, deltaTime, cellSize);
 
         // Update suns
         UpdateSuns(session, currentTime, deltaTime);
@@ -98,10 +98,10 @@ public class GameService
         IncreaseDifficulty(session, currentTime);
 
         // Fall sun from sky
-        FallSunFromSky(session, currentTime);
+        FallSunFromSky(session, currentTime, cellSize);
     }
 
-    private void SpawnZombies(GameSession session, double currentTime)
+    private void SpawnZombies(GameSession session, double currentTime, double cellSize)
     {
         var spawnRate = _config.Game.ZombiesPerDifficulty * session.Difficulty / _config.Game.DifficultyIncreaseInterval;
         var spawnInterval = 1.0 / spawnRate;
@@ -130,7 +130,7 @@ public class GameService
         {
             Type = zombieType,
             Row = row,
-            X = _config.Field.Columns * _config.Field.CellSize,
+            X = _config.Field.Columns * cellSize,
             Health = zombieConfig.Health,
             LastDamageTime = 0
         };
@@ -140,7 +140,7 @@ public class GameService
         session.LastZombieSpawnTimeByRow[row] = currentTime;
     }
 
-    private void UpdateZombies(GameSession session, double currentTime, double deltaTime)
+    private void UpdateZombies(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
         var zombiesToRemove = new List<Zombie>();
 
@@ -157,8 +157,8 @@ public class GameService
 
             if (plantInRow != null)
             {
-                var plantX = plantInRow.Column * _config.Field.CellSize;
-                if (zombie.X <= plantX + _config.Field.CellSize && zombie.X >= plantX)
+                var plantX = plantInRow.Column * cellSize;
+                if (zombie.X <= plantX + cellSize && zombie.X >= plantX)
                 {
                     // Zombie is eating plant
                     if (currentTime - zombie.LastDamageTime >= 1.0)
@@ -199,7 +199,7 @@ public class GameService
         }
     }
 
-    private void UpdatePlants(GameSession session, double currentTime, double deltaTime)
+    private void UpdatePlants(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
         foreach (var plant in session.Plants.ToList())
         {
@@ -217,7 +217,7 @@ public class GameService
                 if (plantConfig.ShootDelay.HasValue && currentTime - plant.LastShootTime >= plantConfig.ShootDelay.Value)
                 {
                     // Check if there's a zombie in the row (to the right of the plant)
-                    var plantX = plant.Column * _config.Field.CellSize;
+                    var plantX = plant.Column * cellSize;
                     var zombieInRow = session.Zombies
                         .FirstOrDefault(z => z.Row == plant.Row && z.X >= plantX && z.Health > 0);
 
@@ -233,7 +233,8 @@ public class GameService
                             var bullet = new Bullet
                             {
                                 Row = plant.Row,
-                                X = plant.Column * _config.Field.CellSize + _config.Field.CellSize / 2
+                                ParentPlantType = plant.Type,
+                                X = plant.Column * cellSize + cellSize / 2d
                             };
                             session.Bullets.Add(bullet);
                         }
@@ -260,22 +261,22 @@ public class GameService
                     plant.LastSunGenerationTime = currentTime;
 
                     // Generate sun around generator
-                    var plantX = plant.Column * _config.Field.CellSize;
-                    var plantY = plant.Row * _config.Field.CellSize;
-                    var range = (plantConfig.SunDropRange ?? 0.5) * _config.Field.CellSize;
+                    var plantX = plant.Column * cellSize;
+                    var plantY = plant.Row * cellSize;
+                    var range = (plantConfig.SunDropRange ?? 0.5) * cellSize;
 
-                    var sunX = Math.Max(0, Math.Min(_config.Field.Columns * _config.Field.CellSize - 20,
+                    var sunX = Math.Max(0, Math.Min(_config.Field.Columns * cellSize - 20,
                         plantX + (_random.NextDouble() - 0.5) * range * 2));
-                    var sunY = Math.Max(0, Math.Min(_config.Field.Rows * _config.Field.CellSize - 20,
+                    var sunY = Math.Max(0, Math.Min(_config.Field.Rows * cellSize - 20,
                         plantY + (_random.NextDouble() - 0.5) * range * 2));
 
                     // Start sun at generator position, animate to target
                     var sun = new Sun
                     {
-                        StartX = plantX + _config.Field.CellSize / 2,
-                        StartY = plantY + _config.Field.CellSize / 2,
-                        X = plantX + _config.Field.CellSize / 2,
-                        Y = plantY + _config.Field.CellSize / 2,
+                        StartX = plantX + cellSize / 2,
+                        StartY = plantY + cellSize / 2,
+                        X = plantX + cellSize / 2,
+                        Y = plantY + cellSize / 2,
                         TargetX = sunX,
                         TargetY = sunY,
                         VelocityY = 0,
@@ -289,7 +290,7 @@ public class GameService
         }
     }
 
-    private void UpdateBullets(GameSession session, double deltaTime)
+    private void UpdateBullets(GameSession session, double deltaTime, double cellSize)
     {
         var bulletsToRemove = new List<Bullet>();
         var bulletSpeed = _config.Plants["Shooter1"].BulletSpeed ?? 500;
@@ -302,7 +303,7 @@ public class GameService
             var zombieHit = session.Zombies.FirstOrDefault(z =>
                 z.Row == bullet.Row &&
                 z.X <= bullet.X &&
-                z.X + _config.Field.CellSize >= bullet.X);
+                z.X + cellSize >= bullet.X);
 
             if (zombieHit != null)
             {
@@ -312,7 +313,7 @@ public class GameService
             }
 
             // Check if bullet reached right edge
-            if (bullet.X >= _config.Field.Columns * _config.Field.CellSize)
+            if (bullet.X >= _config.Field.Columns * cellSize)
             {
                 bulletsToRemove.Add(bullet);
             }
@@ -395,12 +396,12 @@ public class GameService
         }
     }
 
-    private void FallSunFromSky(GameSession session, double currentTime)
+    private void FallSunFromSky(GameSession session, double currentTime, double cellSize)
     {
         if (currentTime - session.LastSunFallTime >= _config.Game.SunFallInterval)
         {
-            var sunX = _random.NextDouble() * (_config.Field.Columns * _config.Field.CellSize - 20);
-            var targetY = 50 + _random.NextDouble() * (_config.Field.Rows * _config.Field.CellSize - 100);
+            var sunX = _random.NextDouble() * (_config.Field.Columns * cellSize - 20);
+            var targetY = 50 + _random.NextDouble() * (_config.Field.Rows * cellSize - 100);
             var sun = new Sun
             {
                 StartX = sunX,

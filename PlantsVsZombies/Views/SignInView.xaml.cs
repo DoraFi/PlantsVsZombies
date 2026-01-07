@@ -20,5 +20,19 @@ public partial class SignInView : UserControl
             ViewModel.Password = PasswordBox.Password;
             ViewModel.SignInCommand.Execute(null);
         };
+        
+        Loaded += OnLoaded;
     }
+
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+#if DEBUG
+        await Task.Delay(500);
+        ViewModel.Login = "lev";
+        ViewModel.Password = "lev";
+        ViewModel.SignInCommand.Execute(null);
+#endif
+    }
+    
 }

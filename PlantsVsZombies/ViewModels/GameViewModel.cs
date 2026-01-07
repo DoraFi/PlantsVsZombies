@@ -1,11 +1,14 @@
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Services;
+using System.Collections.ObjectModel;
+using System.Data.Common;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace PlantsVsZombies.ViewModels;
 
@@ -14,6 +17,8 @@ public partial class GameViewModel : BaseViewModel
     private readonly GameService _gameService;
     private readonly DispatcherTimer _gameTimer;
     private readonly DateTime _startTime;
+
+    public double CellSize { get; set; }
 
     [ObservableProperty]
     private GameSession _session = null!;
@@ -56,7 +61,8 @@ public partial class GameViewModel : BaseViewModel
         _gameService = new GameService();
         _session = session;
         _startTime = DateTime.Now;
-
+        LocationImageSource = _session.Location.GetLocationImage();
+        
         _gameTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(16) // ~60 FPS
@@ -102,7 +108,7 @@ public partial class GameViewModel : BaseViewModel
         var currentTime = (DateTime.Now - _startTime).TotalSeconds;
         var deltaTime = 0.016; // ~16ms
 
-        _gameService.UpdateGame(Session, currentTime, deltaTime);
+        _gameService.UpdateGame(Session, currentTime, deltaTime, CellSize);
 
         // Check for game over
         if (Session.Score < 0)
@@ -169,4 +175,6 @@ public partial class GameViewModel : BaseViewModel
             Application.Current.Dispatcher.Invoke(() => ShowNotification = false);
         });
     }
+    
+    public BitmapImage LocationImageSource { get; }
 }

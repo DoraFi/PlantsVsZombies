@@ -12,7 +12,6 @@ public class FieldConfig
 {
     public int Rows { get; set; }
     public int Columns { get; set; }
-    public int CellSize { get; set; }
 }
 
 public class PlantConfig

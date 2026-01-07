@@ -8,30 +8,95 @@
              xmlns:services="clr-namespace:PlantsVsZombies.Services"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
+             d:DataContext="{d:DesignInstance Type=viewModels:GameViewModel, IsDesignTimeCreatable=False}" 
              mc:Ignorable="d" 
-             DataContext="{x:Type viewModels:GameViewModel}"
              d:DesignHeight="600" d:DesignWidth="1000">
     
     <UserControl.Resources>
         <converters:PlantCostConverter x:Key="PlantCostConverter"/>
         <converters:CanAffordConverter x:Key="CanAffordConverter"/>
+        
+        <ScaleTransform x:Key="BushesScale" ScaleX="1.05" ScaleY="1.05"/>
     </UserControl.Resources>
     
     <Grid>
         <!-- Game Field Background -->
         
-        
-        <Canvas x:Name="GameField" Background="#FF87CEEB" AllowDrop="True"
-                DragOver="GameField_DragOver" Drop="GameField_Drop"
-                DragEnter="GameField_DragEnter" DragLeave="GameField_DragLeave">
-            <!-- Grid lines for cells -->
-            <Canvas.Children>
-                <!-- Plants will be rendered here -->
-                <!-- Zombies will be rendered here -->
-                <!-- Bullets will be rendered here -->
-                <!-- Suns will be rendered here -->
-            </Canvas.Children>
-        </Canvas>
+        <Grid>
+            <Image Source="/Assets/Icons/brains.jpg"
+                   IsHitTestVisible="False"
+                   StretchDirection="UpOnly"
+                   Stretch="UniformToFill"/>
+            
+            <Grid x:Name="GameFieldBackground" HorizontalAlignment="Right">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.RowSpan="3" Grid.Column="2" Grid.Row="0" x:Name="BushRightImage" Stretch="UniformToFill"/>
+                <Image HorizontalAlignment="Right" RenderTransformOrigin="0.5, 0.5" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="BushLeftImage" Stretch="Uniform"/>
+                <Image RenderTransformOrigin="0.5, 0.5" Grid.Row="0" Grid.Column="1" x:Name="BushTopImage" Stretch="UniformToFill">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="1.12" ScaleY="1.35"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <Image Grid.Row="2" Grid.Column="1" x:Name="BushBottomImage" Stretch="UniformToFill" RenderTransformOrigin="0.5, 0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1.07" ScaleY="1.2"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+
+                <Canvas x:Name="GameField" AllowDrop="True"
+                        Grid.Row="1" Grid.Column="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        DragOver="GameField_DragOver" Drop="GameField_Drop"
+                        DragEnter="GameField_DragEnter" DragLeave="GameField_DragLeave">    
+                    <!-- Grid lines for cells -->
+                    <Canvas.Children>
+                        <!-- Plants will be rendered here -->
+                        <!-- Zombies will be rendered here -->
+                        <!-- Bullets will be rendered here -->
+                        <!-- Suns will be rendered here -->
+                    </Canvas.Children>
+                </Canvas>
+            </Grid>
+
+            <!--
+            <Viewbox VerticalAlignment="Stretch" HorizontalAlignment="Right" Stretch="Uniform">
+                <Viewbox.Effect>
+                    <DropShadowEffect Direction="190"
+                        ShadowDepth="20"
+                        BlurRadius="20"
+                        Opacity="0.35"
+                        Color="#4A783A"/>
+                </Viewbox.Effect>
+
+                <Grid>
+                
+                    <Image Source="{Binding LocationImageSource}" 
+                           Grid.RowSpan="3"
+                           x:Name="LocationImage"/>
+                        
+
+                   
+                </Grid>
+            </Viewbox>
+               -->
+        </Grid>
         
         <!-- Plant Shop (Top Left) -->
         <Border Background="#FF4A4A4A" Padding="10" 
@@ -67,7 +132,8 @@
         <Button Content="Menu" Command="{Binding ToggleMenuCommand}" 
                 HorizontalAlignment="Right" VerticalAlignment="Top" 
                 Margin="10" Padding="10,5"/>
-        
+
+
         <!-- Score and Difficulty (Bottom Right) -->
         <Border Background="#FF4A4A4A" Padding="10" 
                 HorizontalAlignment="Right" VerticalAlignment="Bottom" 

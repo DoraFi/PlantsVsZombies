@@ -7,11 +7,15 @@
         xmlns:views="clr-namespace:PlantsVsZombies.Views"
         xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
         mc:Ignorable="d"
+        ResizeMode="NoResize"
+        WindowState="Maximized"
+        WindowStyle="None"
         Title="Plants vs Zombies" Height="600" Width="1000">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
     <Grid x:Name="ContentGrid">
         <!-- Content will be set dynamically -->
+        
     </Grid>
 </Window>

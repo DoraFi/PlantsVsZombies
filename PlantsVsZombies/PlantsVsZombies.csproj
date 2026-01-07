@@ -27,8 +27,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Resource Include="Assets\Icons\Basic.svg" />
-      <Resource Include="Assets\Icons\Sand.svg" />
+      <Resource Include="Assets\Icons\brains.jpg" />
+      <Resource Include="Assets\Icons\Basic.png" />
+      <Resource Include="Assets\Icons\Sand.png" />
+        <Resource Include="Assets\Icons\sun.png" />
+        <Resource Include="Assets\Icons\SandBushLeft.png" />
+        <Resource Include="Assets\Icons\SandBushRight.png" />
+        <Resource Include="Assets\Icons\SandBushTopBottom.png" />
+        <Resource Include="Assets\Icons\BasicBushLeft.png" />
+        <Resource Include="Assets\Icons\BasicBushRight.png" />
+        <Resource Include="Assets\Icons\BasicBushTopBottom.png" />
     </ItemGroup>
 
 </Project>

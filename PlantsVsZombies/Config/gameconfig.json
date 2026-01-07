@@ -1,8 +1,7 @@
 {
   "Field": {
     "Rows": 5,
-    "Columns": 9,
-    "CellSize": 80
+    "Columns": 9
   },
   "Plants": {
     "Shooter1": {

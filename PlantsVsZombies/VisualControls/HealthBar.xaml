@@ -1,0 +1,71 @@
+<UserControl x:Class="PlantsVsZombies.VisualControls.HealthBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PlantsVsZombies.VisualControls"
+             mc:Ignorable="d"
+             Width="80" Height="8"
+             d:DesignHeight="8" d:DesignWidth="80">
+    <UserControl.Resources>
+        <!-- Converter to calculate health percentage -->
+        <local:HealthToPercentageConverter x:Key="HealthToPercentageConverter"/>
+        <!-- Converter to determine health color -->
+        <local:HealthToColorConverter x:Key="HealthToColorConverter"/>
+    </UserControl.Resources>
+    
+    <Grid>
+        <!-- Background border with shadow effect -->
+        <Border Background="#33000000" 
+                CornerRadius="4" 
+                BorderThickness="1"
+                BorderBrush="#66000000">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="2" 
+                                  ShadowDepth="1" 
+                                  Opacity="0.5" 
+                                  Color="Black"/>
+            </Border.Effect>
+        </Border>
+        
+        <!-- Health fill -->
+        <Border x:Name="HealthFill"
+                HorizontalAlignment="Left"
+                CornerRadius="3"
+                Margin="1">
+            <Border.Background>
+                <SolidColorBrush>
+                    <SolidColorBrush.Color>
+                        <MultiBinding Converter="{StaticResource HealthToColorConverter}">
+                            <Binding Path="Health" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                            <Binding Path="MaxHealth" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                        </MultiBinding>
+                    </SolidColorBrush.Color>
+                </SolidColorBrush>
+            </Border.Background>
+            <Border.Width>
+                <MultiBinding Converter="{StaticResource HealthToPercentageConverter}">
+                    <Binding Path="Health" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="MaxHealth" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                </MultiBinding>
+            </Border.Width>
+        </Border>
+        
+        <!-- Glossy effect overlay -->
+        <Border CornerRadius="3" 
+                Margin="1"
+                Opacity="0.35"
+                Background="White"
+                VerticalAlignment="Top"
+                Height="3">
+            <Border.Width>
+                <MultiBinding Converter="{StaticResource HealthToPercentageConverter}">
+                    <Binding Path="Health" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="MaxHealth" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                </MultiBinding>
+            </Border.Width>
+        </Border>
+    </Grid>
+</UserControl>

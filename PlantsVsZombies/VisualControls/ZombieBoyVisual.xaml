@@ -12,7 +12,6 @@
              Canvas.Top="{Binding Y}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Image x:Name="ShieldImage"
-           Canvas.Left="-60"
            RenderTransformOrigin="0.5,0.5"
            Source="{Binding ZombieImageSource}">
         <Image.RenderTransform>

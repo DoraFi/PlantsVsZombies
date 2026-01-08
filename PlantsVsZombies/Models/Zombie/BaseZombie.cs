@@ -52,6 +52,8 @@ public abstract partial class BaseZombie : ObservableObject
     [ObservableProperty]
     private double _health;
     
+    public double MaxHealth { get; protected set; }
+    
     [ObservableProperty]
     private double _speed;
     

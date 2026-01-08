@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Models.Plant;
 
@@ -8,6 +9,7 @@ namespace PlantsVsZombies.VisualControls;
 public class FieldCell : Grid
 {
     private readonly Viewbox _viewBox = new();
+    private HealthBar? _healthBar;
     
     public FieldCell()
     {
@@ -26,8 +28,14 @@ public class FieldCell : Grid
             {
                 if (value == null)
                 {
-
                     _viewBox.Child = null;
+                    
+                    // Remove health bar
+                    if (_healthBar != null)
+                    {
+                        this.Children.Remove(_healthBar);
+                        _healthBar = null;
+                    }
                 }
                 else
                 {
@@ -35,6 +43,39 @@ public class FieldCell : Grid
                     {
                         Content = Plant
                     };
+                    
+                    // Add or update health bar
+                    if (_healthBar == null)
+                    {
+                        var cellWidth = ActualWidth > 0 ? ActualWidth : Width;
+                        _healthBar = new HealthBar
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Margin = new Thickness(0, 5, 0, 0),
+                            Width = cellWidth * 0.6
+                        };
+                        _healthBar.SetBinding(HealthBar.HealthProperty, new Binding(nameof(value.Health)) { Source = value });
+                        _healthBar.SetBinding(HealthBar.MaxHealthProperty, new Binding(nameof(value.MaxHealth)) { Source = value });
+                        this.Children.Add(_healthBar);
+                        
+                        // Update width when FieldCell size changes
+                        this.SizeChanged += (s, e) =>
+                        {
+                            if (_healthBar != null)
+                            {
+                                _healthBar.Width = ActualWidth * 0.6;
+                            }
+                        };
+                    }
+                    else
+                    {
+                        // Update bindings if health bar already exists
+                        _healthBar.SetBinding(HealthBar.HealthProperty, new Binding(nameof(value.Health)) { Source = value });
+                        _healthBar.SetBinding(HealthBar.MaxHealthProperty, new Binding(nameof(value.MaxHealth)) { Source = value });
+                        // Update width
+                        _healthBar.Width = ActualWidth * 0.6;
+                    }
                 }
             });
 

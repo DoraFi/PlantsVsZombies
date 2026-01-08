@@ -101,6 +101,12 @@ public partial class GameView : UserControl
             
             _viewModel.Zombies.Add(baseZombie);
 
+            // Create a container canvas for the zombie and health bar
+            var zombieContainer = new Grid()
+            {
+
+            };
+            
             var viewbox = new Viewbox()
             {
                 Width = _cellSize * 2.25,
@@ -112,6 +118,31 @@ public partial class GameView : UserControl
                 }
             };
 
+            // Create health bar (positioned like in FieldCell)
+            var healthBarWidth = _cellSize * 0.6;
+            var healthBar = new HealthBar
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(-150, 5, 0, 0),
+                Width = healthBarWidth
+            };
+            healthBar.SetBinding(HealthBar.HealthProperty, new Binding(nameof(baseZombie.Health))
+            {
+                Source = baseZombie,
+                Mode = BindingMode.OneWay
+            });
+            healthBar.SetBinding(HealthBar.MaxHealthProperty, new Binding(nameof(baseZombie.MaxHealth))
+            {
+                Source = baseZombie,
+                Mode = BindingMode.OneWay
+            });
+
+            // Add viewbox and health bar to container (order matters - health bar on top)
+            zombieContainer.Children.Add(viewbox);
+            zombieContainer.Children.Add(healthBar);
+
+            // Bind container position to zombie position
             var leftBinding = new Binding(nameof(baseZombie.X))
             {
                 Source = baseZombie,
@@ -124,10 +155,10 @@ public partial class GameView : UserControl
                 Mode = BindingMode.OneWay
             };
 
-            viewbox.SetBinding(Canvas.LeftProperty, leftBinding);
-            viewbox.SetBinding(Canvas.TopProperty, topBinding);
+            zombieContainer.SetBinding(Canvas.LeftProperty, leftBinding);
+            zombieContainer.SetBinding(Canvas.TopProperty, topBinding);
 
-            GameField.Children.Add(viewbox);
+            GameField.Children.Add(zombieContainer);
         });
 
 
@@ -267,6 +298,7 @@ public partial class GameView : UserControl
     
     private void UpdatePlantShopVisuals()
     {
+        return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             // Find all plant shop items and update their visual state

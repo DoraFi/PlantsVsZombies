@@ -13,6 +13,7 @@ public class ZombieGirl : BaseZombie
         LocationType = locationType;
         ZombieImageSource = ZombieType.ZombieGirl.GetZombieImage(locationType);
         Health = ConfigService.GetConfig().Zombies[nameof(ZombieType.ZombieGirl)].Health;
+        MaxHealth = Health;
         Damage = ConfigService.GetConfig().Zombies[nameof(ZombieType.ZombieGirl)].Damage;
         Speed = ConfigService.GetConfig().Zombies[nameof(ZombieType.ZombieGirl)].Speed;
     }

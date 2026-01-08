@@ -12,9 +12,7 @@
              Canvas.Top="{Binding Y}"
              d:DataContext="{d:DesignInstance Type=zombie:ZombieGirl, IsDesignTimeCreatable=False}" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <ProgressBar ></ProgressBar>
     <Image x:Name="ShieldImage"
-           Canvas.Left="-60"
            RenderTransformOrigin="0.5,0.5"
            Source="{Binding ZombieImageSource}">
         <Image.RenderTransform>

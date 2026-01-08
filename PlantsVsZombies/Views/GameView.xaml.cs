@@ -1,15 +1,20 @@
 using System.Diagnostics;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
 using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
+using PlantsVsZombies.Models.Plant;
+using PlantsVsZombies.Models.Zombie;
 using PlantsVsZombies.Services;
 using PlantsVsZombies.ViewModels;
 using PlantsVsZombies.VisualControls;
+using Timer = System.Timers.Timer;
 
 namespace PlantsVsZombies.Views;
 
@@ -17,10 +22,16 @@ public partial class GameView : UserControl
 {
     private readonly GameViewModel _viewModel;
     private readonly GameConfig _config;
-    private Plant? _draggedPlant;
+    private BasePlant? _draggedPlant;
     private bool _isDragging;
     private Point _dragStartPoint;
     private double _cellSize;
+    private int _rows;
+    private int _columns;
+    private System.Timers.Timer _sunSpawnTimer;
+    private System.Timers.Timer _zombieSpawnTimer;
+    private System.Timers.Timer _zombieActionTimer;
+    private List<FieldCell> _fieldCells = new();
 
     public GameView(GameViewModel viewModel)
     {
@@ -28,17 +39,130 @@ public partial class GameView : UserControl
         _viewModel = viewModel;
         DataContext = viewModel;
         _config = ConfigService.GetConfig();
+        _viewModel.Paused += ViewModelOnPaused;
+        _viewModel.Continued += ViewModelOnContinued;
         
         CalculateCellSize();
         InitializeGameField();
         SetupEventHandlers();
         StartRendering();
-        this.Loaded += OnLoaded;
+        InitializeSunFallTimer();
+        InitializeZombieSpawnTimer();
+        InitializeZombieActionTimer();
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private void InitializeZombieActionTimer()
+    {
+        var fps = ConfigService.GetConfig().Game.FPS;
+        _zombieActionTimer = new Timer(TimeSpan.FromSeconds(1) / fps);
+        _zombieActionTimer.Start();
+        _zombieActionTimer.Elapsed += ZombieActionTimerOnElapsed;
+    }
+
+    private void ZombieActionTimerOnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        foreach (var zombie in _viewModel.Zombies.ToList())
+        {
+            zombie.MakeAction();
+        }
+    }
+
+    private void InitializeZombieSpawnTimer()
+    {
+        _zombieSpawnTimer = new System.Timers.Timer(TimeSpan.FromSeconds(1));
+        _zombieSpawnTimer.Start();
+       
+        _zombieSpawnTimer.Elapsed += ZombieSpawnTimerOnElapsed;
+    }
+
+    private void ZombieSpawnTimerOnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        Random rnd = new Random();
+
+        int randomValue = rnd.Next(0, 100);
+        if (randomValue <= _viewModel.Session.Difficulty)
+        {
+            var row = rnd.Next(0, _rows);
+            var zombieType = (ZombieType)rnd.Next(1, 3);
+            SpawnZombie(row, zombieType);
+        }
+    }
+
+    private void SpawnZombie(int row, ZombieType zombieType)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            BaseZombie baseZombie = zombieType switch
+            {
+                ZombieType.ZombieBoy => new ZombieBoy(_fieldCells.Where(cell => cell.Row == row).ToList(), _columns, row, _cellSize, _viewModel.Session.Location),
+                ZombieType.ZombieGirl => new ZombieGirl(_fieldCells.Where(cell => cell.Row == row).ToList(),_columns, row, _cellSize, _viewModel.Session.Location),
+                _ => throw new ArgumentOutOfRangeException(nameof(zombieType), zombieType, null)
+            };
+            
+            _viewModel.Zombies.Add(baseZombie);
+
+            var viewbox = new Viewbox()
+            {
+                Width = _cellSize * 2.25,
+                Height = _cellSize * 2.25,
+                Stretch = Stretch.Uniform,
+                Child = new ContentControl()
+                {
+                    Content = baseZombie,
+                }
+            };
+
+            var leftBinding = new Binding(nameof(baseZombie.X))
+            {
+                Source = baseZombie,
+                Mode = BindingMode.OneWay
+            };
+
+            var topBinding = new Binding(nameof(baseZombie.Y))
+            {
+                Source = baseZombie,
+                Mode = BindingMode.OneWay
+            };
+
+            viewbox.SetBinding(Canvas.LeftProperty, leftBinding);
+            viewbox.SetBinding(Canvas.TopProperty, topBinding);
+
+            GameField.Children.Add(viewbox);
+        });
+
+
+    }
+
+    private void InitializeSunFallTimer()
+    {
+        var timerInterval = ConfigService.GetConfig().Game.SunFallInterval;
+        _sunSpawnTimer = new System.Timers.Timer(timerInterval);
+        _sunSpawnTimer.Start();
+        _sunSpawnTimer.Elapsed += SunSpawnTimerOnElapsed;
+    }
+
+    private void SunSpawnTimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
         
+    }
+
+    private void SummonSun(Point position)
+    {
+        
+    }
+
+    private void ViewModelOnPaused()
+    {
+        _sunSpawnTimer.Stop();
+        _zombieSpawnTimer.Stop();
+        _zombieActionTimer.Stop();
+    }
+    
+    private void ViewModelOnContinued()
+    {
+        _sunSpawnTimer.Start();
+        _zombieSpawnTimer.Start();
+        _zombieActionTimer.Start();
     }
 
     private void CalculateCellSize()
@@ -49,24 +173,24 @@ public partial class GameView : UserControl
 
     private void InitializeGameField()
     {
-        var rows = _config.Field.Rows;
-        var cols = _config.Field.Columns;
+        _rows = _config.Field.Rows;
+        _columns = _config.Field.Columns;
 
         //BushLeftImage.Source = _viewModel.Session.Location.GetBushLeftImage();
         BushTopImage.Source = _viewModel.Session.Location.GetBushTopImage();
         BushRightImage.Source = _viewModel.Session.Location.GetBushRightImage();
         BushBottomImage.Source = _viewModel.Session.Location.GetBushBottomImage();
         
-        GameField.Width = cols * _cellSize;
-        GameField.Height = rows * _cellSize;
+        GameField.Width = _columns * _cellSize;
+        GameField.Height = _rows * _cellSize;
         Canvas.SetTop(GameField, _cellSize);
         Canvas.SetLeft(GameField, _cellSize);
     
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < _rows; i++)
         {
-            for (int j = 0; j < cols; j++)
+            for (int j = 0; j < _columns; j++)
             {
-                var rect = new FieldCell()
+                var fieldCell = new FieldCell()
                 {
                     AllowDrop = true,
                     Width = _cellSize,
@@ -75,14 +199,15 @@ public partial class GameView : UserControl
                     Row = i,
                     Column = j,
                 };
+                _fieldCells.Add(fieldCell);
                 
-                GameField.Children.Add(rect);
-                Canvas.SetLeft(rect, j * _cellSize);
-                Canvas.SetTop(rect, i * _cellSize);
+                GameField.Children.Add(fieldCell);
+                Canvas.SetLeft(fieldCell, j * _cellSize);
+                Canvas.SetTop(fieldCell, i * _cellSize);
                 
-                rect.DragEnter += RectOnDragEnter;
-                rect.DragLeave += RectOnDragLeave;
-                rect.Drop += RectOnDrop;
+                fieldCell.DragEnter += RectOnDragEnter;
+                fieldCell.DragLeave += RectOnDragLeave;
+                fieldCell.Drop += RectOnDrop;
             }
         }
     }
@@ -330,15 +455,15 @@ public partial class GameView : UserControl
     {
         return type switch
         {
-            ZombieType.GirlZombie => Brushes.Pink,
-            ZombieType.BoyZombie => Brushes.Blue,
+            ZombieType.ZombieBoy => Brushes.Pink,
+            ZombieType.ZombieGirl => Brushes.Blue,
             _ => Brushes.Gray
         };
     }
 
     private void PlantShopItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (sender is FrameworkElement element && element.DataContext is Plant plant)
+        if (sender is FrameworkElement element && element.DataContext is BasePlant plant)
         {
             if (!_viewModel.CanAffordPlant(plant.Type))
                 return;
@@ -381,13 +506,13 @@ public partial class GameView : UserControl
         }
     }
 
-    private void ShowDragPreview(Plant plant, Point position)
+    private void ShowDragPreview(BasePlant basePlant, Point position)
     {
         DragPreview.Visibility = Visibility.Visible;
         
         DragPreview.Width = _cellSize;
         DragPreview.Height = _cellSize;
-        DragPreview.PlacePlant(plant.Type);
+        DragPreview.PlacePlant(basePlant.Type);
         
         // Position near cursor initially
         UpdateDragPreviewPosition(position);

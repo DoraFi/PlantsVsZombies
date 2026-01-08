@@ -1,5 +1,7 @@
 using System.Windows;
 using PlantsVsZombies.Models;
+using PlantsVsZombies.Models.Plant;
+using PlantsVsZombies.Models.Zombie;
 using PlantsVsZombies.Services;
 
 namespace PlantsVsZombies.Services;
@@ -67,72 +69,34 @@ public class GameService
         session.Score += deltaTime;
 
         // Spawn zombies
-        SpawnZombies(session, currentTime, cellSize);
+        //SpawnZombies(session, currentTime, cellSize);
 
         // Update zombies
-        UpdateZombies(session, currentTime, deltaTime, cellSize);
+        //UpdateZombies(session, currentTime, deltaTime, cellSize);
 
         // Update plants (shooting, sun generation)
-        UpdatePlants(session, currentTime, deltaTime, cellSize);
+        //UpdatePlants(session, currentTime, deltaTime, cellSize);
 
         // Update bullets
-        UpdateBullets(session, deltaTime, cellSize);
+        //UpdateBullets(session, deltaTime, cellSize);
 
         // Update suns
-        UpdateSuns(session, currentTime, deltaTime);
+        //UpdateSuns(session, currentTime, deltaTime);
 
         // Check for game over
-        CheckGameOver(session);
+        //CheckGameOver(session);
 
         // Increase difficulty
         IncreaseDifficulty(session, currentTime);
 
         // Fall sun from sky
-        FallSunFromSky(session, currentTime, cellSize);
+        //FallSunFromSky(session, currentTime, cellSize);
     }
-
-    private void SpawnZombies(GameSession session, double currentTime, double cellSize)
-    {
-        var spawnRate = _config.Game.ZombiesPerDifficulty * session.Difficulty / _config.Game.DifficultyIncreaseInterval;
-        var spawnInterval = 1.0 / spawnRate;
-
-        if (currentTime - session.LastZombieSpawnTime < spawnInterval)
-            return;
-
-        var availableRows = new List<int>();
-        for (int i = 0; i < _config.Field.Rows; i++)
-        {
-            if (!session.LastZombieSpawnTimeByRow.ContainsKey(i) ||
-                currentTime - session.LastZombieSpawnTimeByRow[i] >= _config.Game.ZombieSpawnMinDelay)
-            {
-                availableRows.Add(i);
-            }
-        }
-
-        if (availableRows.Count == 0)
-            return;
-
-        var row = availableRows[_random.Next(availableRows.Count)];
-        var zombieType = _random.Next(2) == 0 ? ZombieType.GirlZombie : ZombieType.BoyZombie;
-        var zombieConfig = GetZombieConfig(zombieType);
-
-        var zombie = new Zombie
-        {
-            Type = zombieType,
-            Row = row,
-            X = _config.Field.Columns * cellSize,
-            Health = zombieConfig.Health,
-            LastDamageTime = 0
-        };
-
-        session.Zombies.Add(zombie);
-        session.LastZombieSpawnTime = currentTime;
-        session.LastZombieSpawnTimeByRow[row] = currentTime;
-    }
-
+    
+/*
     private void UpdateZombies(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
-        var zombiesToRemove = new List<Zombie>();
+        var zombiesToRemove = new List<BaseZombie>();
 
         foreach (var zombie in session.Zombies)
         {
@@ -188,7 +152,8 @@ public class GameService
             session.Zombies.Remove(zombie);
         }
     }
-
+*/
+    
     private void UpdatePlants(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
         foreach (var plant in session.Plants.ToList())

@@ -43,4 +43,5 @@ public class GameSettingsConfig
     public int InitialDifficulty { get; set; }
     public int MaxDifficulty { get; set; }
     public int ZombiesPerDifficulty { get; set; }
+    public int FPS { get; set; }
 }

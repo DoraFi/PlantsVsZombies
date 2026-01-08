@@ -2,9 +2,9 @@ using System.Windows.Media.Imaging;
 using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Services;
 
-namespace PlantsVsZombies.Models;
+namespace PlantsVsZombies.Models.Plant;
 
-public class PlantShooter1 : Plant
+public class PlantShooter1 : BasePlant
 {
     public PlantShooter1()
     {
@@ -13,6 +13,7 @@ public class PlantShooter1 : Plant
         HeadImageSource = plantImages[1];
         
         Health = ConfigService.GetConfig().Plants[nameof(PlantType.Shooter1)].Health;
+        MaxHealth = Health;
     }
     
     public BitmapImage BodyImageSource { get; }

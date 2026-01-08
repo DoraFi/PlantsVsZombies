@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using PlantsVsZombies.Models;
+using PlantsVsZombies.Models.Plant;
 using PlantsVsZombies.Services;
 
 namespace PlantsVsZombies.Converters;

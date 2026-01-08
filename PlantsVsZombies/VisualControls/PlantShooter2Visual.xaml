@@ -1,0 +1,85 @@
+<Canvas x:Class="PlantsVsZombies.VisualControls.PlantShooter2Visual"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PlantsVsZombies.VisualControls"
+             xmlns:models="clr-namespace:PlantsVsZombies.Models"
+             xmlns:plant="clr-namespace:PlantsVsZombies.Models.Plant"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=plant:PlantShooter2, IsDesignTimeCreatable=False}" 
+             Width="300" Height="300"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <!-- Left Arm (animated) - raised and bent upwards -->
+    <Image x:Name="ArmLeftImage"
+           Canvas.Top="90"
+           Canvas.Left="0"
+           RenderTransformOrigin="0.5,1"
+           Source="{Binding ArmLeftImageSource}">
+        <Image.RenderTransform>
+            <TransformGroup>
+                <RotateTransform x:Name="ArmLeftRotate" Angle="-35"/>
+            </TransformGroup>
+        </Image.RenderTransform>
+        <Image.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard>
+                    <Storyboard RepeatBehavior="Forever">
+                        <!-- Gentle arm sway animation -->
+                        <DoubleAnimation
+                            Storyboard.TargetName="ArmLeftRotate"
+                            Storyboard.TargetProperty="Angle"
+                            From="-35"
+                            To="-30"
+                            Duration="0:0:1.25"
+                            AutoReverse="True">
+                            <DoubleAnimation.EasingFunction>
+                                <SineEase EasingMode="EaseInOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Image.Triggers>
+    </Image>
+
+    <!-- Right Arm (animated) - raised and bent upwards -->
+    <Image x:Name="ArmRightImage"
+           Canvas.Top="30"
+           Canvas.Left="210"
+           RenderTransformOrigin="0.5,1"
+           Source="{Binding ArmRightImageSource}">
+        <Image.RenderTransform>
+            <TransformGroup>
+                <RotateTransform x:Name="ArmRightRotate" Angle="-35"/>
+            </TransformGroup>
+        </Image.RenderTransform>
+        <Image.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard>
+                    <Storyboard RepeatBehavior="Forever">
+                        <!-- Gentle arm sway animation (opposite direction) -->
+                        <DoubleAnimation
+                            Storyboard.TargetName="ArmRightRotate"
+                            Storyboard.TargetProperty="Angle"
+                            From="20"
+                            To="25"
+                            
+                            Duration="0:0:1.5"
+                            AutoReverse="True">
+                            <DoubleAnimation.EasingFunction>
+                                <SineEase EasingMode="EaseInOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Image.Triggers>
+    </Image>
+
+    <!-- Body (static) -->
+    <Image x:Name="BodyImage"
+      Canvas.Top="0"
+      Canvas.Left="100"
+      Source="{Binding BodyImageSource}"/>  
+</Canvas>

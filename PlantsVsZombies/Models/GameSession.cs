@@ -17,10 +17,10 @@ public partial class GameSession : ObservableObject
     [ObservableProperty] private int _sunBalance;
     
     [JsonIgnore]
-    public ObservableCollection<Plant> Plants { get; set; } = new();
+    public ObservableCollection<Plant.BasePlant> Plants { get; set; } = new();
     
     [JsonIgnore]
-    public ObservableCollection<Zombie> Zombies { get; set; } = new();
+    public ObservableCollection<Zombie.BaseZombie> Zombies { get; set; } = new();
     
     [JsonIgnore]
     public ObservableCollection<Bullet> Bullets { get; set; } = new();
@@ -29,8 +29,8 @@ public partial class GameSession : ObservableObject
     public ObservableCollection<Sun> Suns { get; set; } = new();
     
     // For serialization
-    public List<Plant> PlantsList { get; set; } = new();
-    public List<Zombie> ZombiesList { get; set; } = new();
+    public List<Plant.BasePlant> PlantsList { get; set; } = new();
+    public List<Zombie.BaseZombie> ZombiesList { get; set; } = new();
     public List<Bullet> BulletsList { get; set; } = new();
     public List<Sun> SunsList { get; set; } = new();
     

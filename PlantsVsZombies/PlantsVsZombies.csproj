@@ -56,6 +56,14 @@
         <Resource Include="Assets\Icons\sun_balance.png" />
         <None Remove="Assets\Icons\SandRoof.png" />
         <None Remove="Assets\Icons\BasicRoof.png" />
+        <None Remove="Assets\Icons\BasicZombieBoy.png" />
+        <Resource Include="Assets\Icons\BasicZombieBoy.png" />
+        <None Remove="Assets\Icons\BasicZombieGirl.png" />
+        <Resource Include="Assets\Icons\BasicZombieGirl.png" />
+        <None Remove="Assets\Icons\SandZombieBoy.png" />
+        <Resource Include="Assets\Icons\SandZombieBoy.png" />
+        <None Remove="Assets\Icons\SandZombieGirl.png" />
+        <Resource Include="Assets\Icons\SandZombieGirl.png" />
     </ItemGroup>
 
     <ItemGroup>

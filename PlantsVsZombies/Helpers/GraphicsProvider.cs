@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PlantsVsZombies.Models;
+using PlantsVsZombies.Models.Plant;
+using PlantsVsZombies.Models.Zombie;
 
 namespace PlantsVsZombies.Helpers;
 
@@ -33,6 +35,23 @@ public static class GraphicsProvider
             new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/shooter2_hand_right.png")),
         ],
         _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
+    };
+
+    public static BitmapImage GetZombieImage(this ZombieType zombieType, LocationType locationType) => zombieType switch
+    {
+        ZombieType.ZombieGirl => locationType switch
+        {
+            LocationType.GrassLawn => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/BasicZombieBoy.png")),
+            LocationType.SandBeach => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/SandZombieBoy.png")),
+            _ => throw new ArgumentOutOfRangeException(nameof(locationType), locationType, null)
+        },
+        ZombieType.ZombieBoy => locationType switch
+        {
+            LocationType.GrassLawn => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/BasicZombieGirl.png")),
+            LocationType.SandBeach => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/SandZombieGirl.png")),
+            _ => throw new ArgumentOutOfRangeException(nameof(locationType), locationType, null)
+        },
+        _ => throw new ArgumentOutOfRangeException(nameof(zombieType), zombieType, null)
     };
     
     public static BitmapImage GetLocationRoofImage(this LocationType locationType) => locationType switch

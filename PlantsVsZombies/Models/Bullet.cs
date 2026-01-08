@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using PlantsVsZombies.Models.Plant;
 
 namespace PlantsVsZombies.Models;
 

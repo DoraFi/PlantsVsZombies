@@ -31,12 +31,12 @@
     }
   },
   "Zombies": {
-    "GirlZombie": {
+    "ZombieGirl": {
       "Health": 100,
       "Speed": 30,
       "Damage": 10
     },
-    "BoyZombie": {
+    "ZombieBoy": {
       "Health": 150,
       "Speed": 15,
       "Damage": 25
@@ -45,11 +45,12 @@
   "Game": {
     "ZombieSpawnMinDelay": 0.2,
     "SunFallInterval": 10.0,
-    "SunValue": 50,
+    "SunValue": 500,
     "SunPickupTimeout": 7.0,
     "DifficultyIncreaseInterval": 30.0,
-    "InitialDifficulty": 1,
+    "InitialDifficulty": 20,
     "MaxDifficulty": 10,
-    "ZombiesPerDifficulty": 2
+    "ZombiesPerDifficulty": 2,
+    "FPS": 60
   }
 }

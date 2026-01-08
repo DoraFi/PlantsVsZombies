@@ -171,24 +171,28 @@
                                                     VerticalAlignment="Center">
                                                 <ContentControl Content="{Binding}"/>
                                             </Viewbox>
-                                            <StackPanel Orientation="Horizontal"
-                                                        HorizontalAlignment="Center"
-                                                         Margin="0 25 0 0">
-                                            
-                                                <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="#FFE7DB" FontSize="16" />
-
-                                                <Image Source="/Assets/Icons/sun_balance.png" Width="20" Height="20"
-                                                       Margin="6 2 0 0"/>
-                                            </StackPanel>
+                                          
                                         </StackPanel>
                                 </Border>
                                 
                                 <Border CornerRadius="20"
                                         Background="Black"
-                                        Opacity="0.75"
+                                        Opacity="0.5"
                                         Visibility="{Binding ElementName=PlantShopItem, Path=IsEnabled, Converter={StaticResource OppositeBoolToVisibilityConverter}}"/>
+                                
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Bottom"
+                                            HorizontalAlignment="Center"
+                                            Margin="0 0 0 10">
+                                            
+                                    <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}"
+                                               VerticalAlignment="Center"
+                                               Foreground="#FFE7DB" FontSize="16" />
+
+                                    <Image Source="/Assets/Icons/sun_balance.png" Width="20" Height="20"
+                                           Margin="6 2 0 0"/>
+                                </StackPanel>
+                                
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

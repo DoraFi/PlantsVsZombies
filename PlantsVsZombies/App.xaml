@@ -5,247 +5,31 @@
              xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
              xmlns:models="clr-namespace:PlantsVsZombies.Models"
              xmlns:visualControls="clr-namespace:PlantsVsZombies.VisualControls"
+             xmlns:zombie="clr-namespace:PlantsVsZombies.Models.Zombie"
+             xmlns:plant="clr-namespace:PlantsVsZombies.Models.Plant"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:OppositeBoolToVisibilityConverter x:Key="OppositeBoolToVisibilityConverter"/>
         
-         <DataTemplate DataType="{x:Type models:PlantShooter1}">
-            <Canvas Width="300" Height="300">
-                <!-- Body (static) -->
-                <Image x:Name="BodyImage"
-                       Canvas.Top="70"
-                       Canvas.Left="-50"
-                       Source="{Binding BodyImageSource}"/>
-
-                <!-- Head (animated) -->
-                <Image x:Name="HeadImage"
-                       Canvas.Top="0"
-                       Canvas.Left="144"
-                       RenderTransformOrigin="0,0.5"
-                       Source="{Binding HeadImageSource}">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <TranslateTransform x:Name="HeadTranslate"/>
-                            <RotateTransform x:Name="HeadRotate"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever">
-                                    <!-- Gentle vertical bobbing animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="HeadTranslate"
-                                        Storyboard.TargetProperty="Y"
-                                        From="0"
-                                        To="-5"
-                                        Duration="0:0:1"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                    
-                                    <!-- Slight rotation/sway animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="HeadRotate"
-                                        Storyboard.TargetProperty="Angle"
-                                        From="-2"
-                                        To="2"
-                                        Duration="0:0:1.33"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-            </Canvas>
+         <DataTemplate DataType="{x:Type plant:PlantShooter1}">
+             <visualControls:PlantShooter1Visual/>
+         </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type plant:PlantShooter2}">
+            <visualControls:PlantShooter2Visual/>
         </DataTemplate>
         
-        <DataTemplate DataType="{x:Type models:PlantShooter2}">
-            <Canvas Width="300" Height="300">
-                <!-- Left Arm (animated) - raised and bent upwards -->
-                <Image x:Name="ArmLeftImage"
-                       Canvas.Top="90"
-                       Canvas.Left="0"
-                       RenderTransformOrigin="0.5,1"
-                       Source="{Binding ArmLeftImageSource}">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <RotateTransform x:Name="ArmLeftRotate" Angle="-35"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever">
-                                    <!-- Gentle arm sway animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="ArmLeftRotate"
-                                        Storyboard.TargetProperty="Angle"
-                                        From="-35"
-                                        To="-30"
-                                        Duration="0:0:1.25"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-
-                <!-- Right Arm (animated) - raised and bent upwards -->
-                <Image x:Name="ArmRightImage"
-                       Canvas.Top="30"
-                       Canvas.Left="210"
-                       RenderTransformOrigin="0.5,1"
-                       Source="{Binding ArmRightImageSource}">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <RotateTransform x:Name="ArmRightRotate" Angle="-35"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever">
-                                    <!-- Gentle arm sway animation (opposite direction) -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="ArmRightRotate"
-                                        Storyboard.TargetProperty="Angle"
-                                        From="20"
-                                        To="25"
-                                        
-                                        Duration="0:0:1.5"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-
-                <!-- Body (static) -->
-                <Image x:Name="BodyImage"
-                  Canvas.Top="0"
-                  Canvas.Left="100"
-                  Source="{Binding BodyImageSource}"/>  
-            </Canvas>
+        <DataTemplate DataType="{x:Type plant:PlantGenerator}">
+            <visualControls:PlantGeneratorVisual/>
         </DataTemplate>
         
-        <DataTemplate DataType="{x:Type models:PlantGenerator}">
-            <Canvas Width="300" Height="300">
-                <!-- Body (static) -->
-                <Image x:Name="BodyImage"
-                       Canvas.Top="145"
-                       Canvas.Left="0"
-                       Source="{Binding BodyImageSource}"/>
-
-                <!-- Head (animated) -->
-                <Image x:Name="HeadImage"
-                       Canvas.Top="0"
-                       Canvas.Left="10"
-                       RenderTransformOrigin="0,0.5"
-                       Source="{Binding HeadImageSource}">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <TranslateTransform x:Name="HeadTranslate"/>
-                            <RotateTransform x:Name="HeadRotate"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever">
-                                    <!-- Gentle vertical bobbing animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="HeadTranslate"
-                                        Storyboard.TargetProperty="Y"
-                                        From="0"
-                                        To="-5"
-                                        Duration="0:0:1"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                    
-                                    <!-- Slight rotation/sway animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="HeadRotate"
-                                        Storyboard.TargetProperty="Angle"
-                                        From="-2"
-                                        To="2"
-                                        Duration="0:0:1.33"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-            </Canvas>
+        <DataTemplate DataType="{x:Type plant:PlantShield}">
+            <visualControls:PlantShieldVisual/>
         </DataTemplate>
         
-        <DataTemplate DataType="{x:Type models:PlantShield}">
-            <Canvas Width="300" Height="300">
-                <!-- Shield (animated with gentle pulse) -->
-                <Image x:Name="ShieldImage"
-                       Canvas.Left="-60"
-                       RenderTransformOrigin="0.5,0.5"
-                       Source="{Binding ShieldImageSource}">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform x:Name="ShieldScale"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard RepeatBehavior="Forever">
-                                    <!-- Gentle pulse animation -->
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="ShieldScale"
-                                        Storyboard.TargetProperty="ScaleX"
-                                        From="1.0"
-                                        To="1.05"
-                                        Duration="0:0:2"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="ShieldScale"
-                                        Storyboard.TargetProperty="ScaleY"
-                                        From="1.0"
-                                        To="1.05"
-                                        Duration="0:0:2"
-                                        AutoReverse="True">
-                                        <DoubleAnimation.EasingFunction>
-                                            <SineEase EasingMode="EaseInOut"/>
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-            </Canvas>
+        <DataTemplate DataType="{x:Type zombie:BaseZombie}">
+            <visualControls:ZombieGirlVisual/>
         </DataTemplate>
     </Application.Resources>
     

@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using PlantsVsZombies.Models.Plant;
+using PlantsVsZombies.Models.Zombie;
 
 namespace PlantsVsZombies.ViewModels;
 
@@ -22,9 +24,6 @@ public partial class GameViewModel : BaseViewModel
     private GameSession _session = null!;
 
     [ObservableProperty]
-    private bool _isPaused;
-
-    [ObservableProperty]
     private bool _isMenuVisible;
 
     [ObservableProperty]
@@ -36,12 +35,12 @@ public partial class GameViewModel : BaseViewModel
     [ObservableProperty]
     private bool _showNotification;
 
-    public ObservableCollection<Plant> Plants => Session.Plants;
-    public ObservableCollection<Zombie> Zombies => Session.Zombies;
+    public ObservableCollection<BasePlant> Plants => Session.Plants;
+    public ObservableCollection<BaseZombie> Zombies => Session.Zombies;
     public ObservableCollection<Bullet> Bullets => Session.Bullets;
     public ObservableCollection<Sun> Suns => Session.Suns;
 
-    public List<Plant> AvailablePlants { get; } = new()
+    public List<BasePlant> AvailablePlants { get; } = new()
     {
         new PlantShooter1(),
         new PlantShooter2(),
@@ -74,6 +73,10 @@ public partial class GameViewModel : BaseViewModel
     private void ToggleMenu()
     {
         IsMenuVisible = !IsMenuVisible;
+        if (IsMenuVisible)
+            Paused?.Invoke();
+        else 
+            Continued?.Invoke();
     }
 
     [RelayCommand]
@@ -99,9 +102,12 @@ public partial class GameViewModel : BaseViewModel
         }
     }
 
+    public event Action? Paused;
+    public event Action? Continued;
+
     private void GameTimer_Tick(object? sender, EventArgs e)
     {
-        if (IsPaused || IsMenuVisible)
+        if (IsMenuVisible)
             return;
 
         var currentTime = (DateTime.Now - _startTime).TotalSeconds;

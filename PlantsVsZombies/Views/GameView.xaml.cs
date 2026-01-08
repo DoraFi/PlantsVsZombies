@@ -43,7 +43,7 @@ public partial class GameView : UserControl
 
     private void CalculateCellSize()
     {
-        _cellSize = 150;
+        _cellSize = 120;
         _viewModel.CellSize = _cellSize;
     }
 

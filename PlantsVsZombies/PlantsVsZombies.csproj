@@ -55,13 +55,16 @@
         <None Remove="Assets\Icons\sun_balance.png" />
         <Resource Include="Assets\Icons\sun_balance.png" />
         <None Remove="Assets\Icons\SandRoof.png" />
-        <Resource Include="Assets\Icons\SandRoof.png" />
         <None Remove="Assets\Icons\BasicRoof.png" />
-        <Resource Include="Assets\Icons\BasicRoof.png" />
     </ItemGroup>
 
     <ItemGroup>
       <Resource Include="Assets\Icons\shooter1_head.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Assets\Icons\BasicRoof.png" />
+      <Resource Include="Assets\Icons\SandRoof.png" />
     </ItemGroup>
 
 </Project>

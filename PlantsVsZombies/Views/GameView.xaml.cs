@@ -17,7 +17,7 @@ public partial class GameView : UserControl
 {
     private readonly GameViewModel _viewModel;
     private readonly GameConfig _config;
-    private PlantType? _draggedPlantType;
+    private Plant? _draggedPlant;
     private bool _isDragging;
     private Point _dragStartPoint;
     private double _cellSize;
@@ -43,7 +43,7 @@ public partial class GameView : UserControl
 
     private void CalculateCellSize()
     {
-        _cellSize = 120;
+        _cellSize = 150;
         _viewModel.CellSize = _cellSize;
     }
 
@@ -338,12 +338,12 @@ public partial class GameView : UserControl
 
     private void PlantShopItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (sender is FrameworkElement element && element.DataContext is PlantType plantType)
+        if (sender is FrameworkElement element && element.DataContext is Plant plant)
         {
-            if (!_viewModel.CanAffordPlant(plantType))
+            if (!_viewModel.CanAffordPlant(plant.Type))
                 return;
 
-            _draggedPlantType = plantType;
+            _draggedPlant = plant;
             _isDragging = false;
             _dragStartPoint = e.GetPosition(this);
             element.CaptureMouse();
@@ -352,54 +352,48 @@ public partial class GameView : UserControl
 
     private void PlantShopItem_MouseMove(object sender, MouseEventArgs e)
     {
-        if (sender is FrameworkElement element && element.IsMouseCaptured && _draggedPlantType.HasValue)
+        if (sender is FrameworkElement element && element.IsMouseCaptured && _draggedPlant != null)
         {
             var currentPoint = e.GetPosition(this);
             var distance = Math.Sqrt(Math.Pow(currentPoint.X - _dragStartPoint.X, 2) + 
                                    Math.Pow(currentPoint.Y - _dragStartPoint.Y, 2));
+            
+            Debug.WriteLine(DateTime.Now.ToString() + nameof(PlantShopItem_MouseMove));
             
             if (distance > 5) // Start dragging after 5 pixels
             {
                 _isDragging = true;
                 
                 // Show drag preview
-                ShowDragPreview(_draggedPlantType.Value, currentPoint);
-                
-                DragDrop.DoDragDrop(element, _draggedPlantType.Value, DragDropEffects.Move);
+                Debug.WriteLine(DateTime.Now.ToString() + nameof(ShowDragPreview));
+                ShowDragPreview(_draggedPlant, currentPoint);
+              
+                DragDrop.DoDragDrop(element, _draggedPlant.Type, DragDropEffects.Move);
                 
                 // Hide drag preview
+                Debug.WriteLine(DateTime.Now.ToString() + nameof(HideDragPreview));
                 HideDragPreview();
                 
                 element.ReleaseMouseCapture();
-                _draggedPlantType = null;
+                //_draggedPlantType = null;
                 _isDragging = false;
             }
         }
     }
-    
-    private void ShowDragPreview(PlantType plantType, Point position)
+
+    private void ShowDragPreview(Plant plant, Point position)
     {
         DragPreview.Visibility = Visibility.Visible;
-        var brush = GetPlantColor(plantType);
-        if (brush is SolidColorBrush solidBrush)
-        {
-            DragPreview.Background = new SolidColorBrush(solidBrush.Color) { Opacity = 0.7 };
-        }
-        else
-        {
-            DragPreview.Background = new SolidColorBrush(Colors.Gray) { Opacity = 0.7 };
-        }
+        
         DragPreview.Width = _cellSize;
         DragPreview.Height = _cellSize;
-        
-        // Set preview text
-        DragPreviewText.Text = plantType.ToString().Substring(0, Math.Min(3, plantType.ToString().Length));
+        DragPreview.PlacePlant(plant.Type);
         
         // Position near cursor initially
-        UpdateDragPreviewPosition(plantType, position);
+        UpdateDragPreviewPosition(position);
     }
     
-    private void UpdateDragPreviewPosition(PlantType plantType, Point position)
+    private void UpdateDragPreviewPosition(Point position)
     {
         if (DragPreview.Visibility == Visibility.Visible)
         {
@@ -433,38 +427,9 @@ public partial class GameView : UserControl
         if (sender is FrameworkElement element && element.IsMouseCaptured)
         {
             element.ReleaseMouseCapture();
-            _draggedPlantType = null;
+            _draggedPlant = null;
             _isDragging = false;
         }
-    }
-
-    private void GameField_DragEnter(object sender, DragEventArgs e)
-    {
-        if (e.Data.GetDataPresent(typeof(PlantType)))
-        {
-            var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
-            var pos = e.GetPosition(this);
-            ShowDragPreview(plantType, pos);
-        }
-    }
-
-    private void GameField_DragOver(object sender, DragEventArgs e)
-    {
-        if (e.Data.GetDataPresent(typeof(PlantType)))
-        {
-            e.Effects = DragDropEffects.Move;
-            e.Handled = true;
-            
-            // Update drag preview position
-            var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
-            var pos = e.GetPosition(this);
-            UpdateDragPreviewPosition(plantType, pos);
-        }
-    }
-
-    private void GameField_DragLeave(object sender, DragEventArgs e)
-    {
-        HideDragPreview();
     }
 
     private void GameField_Drop(object sender, DragEventArgs e)

@@ -9,9 +9,9 @@ public class CanAffordConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length >= 2 && values[0] is PlantType plantType && values[1] is GameViewModel viewModel)
+        if (values.Length >= 2 && values[0] is Plant plant && values[1] is GameViewModel viewModel)
         {
-            return viewModel.CanAffordPlant(plantType);
+            return viewModel.CanAffordPlant(plant.Type);
         }
         return false;
     }

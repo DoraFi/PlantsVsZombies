@@ -8,6 +8,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:OppositeBoolToVisibilityConverter x:Key="OppositeBoolToVisibilityConverter"/>
         
          <DataTemplate DataType="{x:Type models:PlantShooter1}">
             <Canvas Width="300" Height="300">

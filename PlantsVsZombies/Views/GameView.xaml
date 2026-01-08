@@ -8,6 +8,8 @@
              xmlns:services="clr-namespace:PlantsVsZombies.Services"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:PlantsVsZombies.Converters"
+             xmlns:views="clr-namespace:PlantsVsZombies.Views"
+             xmlns:visualControls="clr-namespace:PlantsVsZombies.VisualControls"
              d:DataContext="{d:DesignInstance Type=viewModels:GameViewModel, IsDesignTimeCreatable=False}" 
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000">
@@ -22,13 +24,7 @@
     <Grid>
         <!-- Game Field Background -->
 
-        <Image Source="{Binding RoofImageSource}"
-     IsHitTestVisible="False"
-        Grid.Row="1"
-        Grid.Column="0"
-     HorizontalAlignment="Left"
-     VerticalAlignment="Center"
-     Stretch="Uniform"/>
+       
 
         <Grid>
             <Grid x:Name="GameFieldBackground" HorizontalAlignment="Right">
@@ -105,7 +101,20 @@
                -->
         </Grid>
         
-        <!-- Plant Shop (Top Left) -->
+        <Image Source="{Binding RoofImageSource}"
+               IsHitTestVisible="False"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Center"
+               Stretch="Uniform">
+            <Image.Effect>
+                <DropShadowEffect Opacity="0.5"
+                                  Color="Black"
+                                  ShadowDepth="20"
+                                  BlurRadius="40"/>
+            </Image.Effect>
+        </Image>
+        
+        <!-- Plant Shop -->
         <Border Background="#FFE7DB" Padding="10" 
                 HorizontalAlignment="Left" VerticalAlignment="Top" 
                 Margin="10" CornerRadius="20">
@@ -137,34 +146,50 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="PlantShopItem" 
-                                    Background="#515150" Margin="5 10"
+                            <Grid Margin="5 10" 
+                                  Width="120"
+                                  Height="130">
+                                <Border x:Name="PlantShopItem" 
+                                    Background="#515150" 
                                     CornerRadius="20" Cursor="Hand"
-                                    Width="120"
-                                    Height="130"
                                     Padding="0 15 0 0"
                                     MouseLeftButtonDown="PlantShopItem_MouseLeftButtonDown"
                                     MouseMove="PlantShopItem_MouseMove"
                                     MouseLeave="PlantShopItem_MouseLeave">
-                                <StackPanel>
-                                    <Viewbox Width="56" Height="56" Stretch="Uniform" 
-                                            HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center">
-                                        <ContentControl Content="{Binding}"/>
-                                    </Viewbox>
-                                    <StackPanel Orientation="Horizontal"
-                                                HorizontalAlignment="Center"
-                                                 Margin="0 25 0 0">
                                     
-                                        <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="#FFE7DB" FontSize="16" />
+                                    <Border.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource CanAffordConverter}">
+                                            <Binding Path="."/> <!-- Or bind to Plant property -->
+                                            <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=views:GameView}"/> <!-- GameViewModel -->
+                                            <Binding Path="DataContext.Session.SunBalance" RelativeSource="{RelativeSource AncestorType=views:GameView}"/>
+                                        </MultiBinding>
+                                    </Border.IsEnabled>
+                                    
+                                        <StackPanel>
+                                            <Viewbox Width="56" Height="56" Stretch="Uniform" 
+                                                    HorizontalAlignment="Center" 
+                                                    VerticalAlignment="Center">
+                                                <ContentControl Content="{Binding}"/>
+                                            </Viewbox>
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center"
+                                                         Margin="0 25 0 0">
+                                            
+                                                <TextBlock Text="{Binding Path=Type, Converter={StaticResource PlantCostConverter}}"
+                                                           VerticalAlignment="Center"
+                                                           Foreground="#FFE7DB" FontSize="16" />
 
-                                        <Image Source="/Assets/Icons/sun_balance.png" Width="20" Height="20"
-                                               Margin="6 2 0 0"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
+                                                <Image Source="/Assets/Icons/sun_balance.png" Width="20" Height="20"
+                                                       Margin="6 2 0 0"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                </Border>
+                                
+                                <Border CornerRadius="20"
+                                        Background="Black"
+                                        Opacity="0.75"
+                                        Visibility="{Binding ElementName=PlantShopItem, Path=IsEnabled, Converter={StaticResource OppositeBoolToVisibilityConverter}}"/>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -219,14 +244,7 @@
         
         <!-- Drag Preview -->
         <Canvas x:Name="DragPreviewCanvas" IsHitTestVisible="False">
-            <Border x:Name="DragPreview" Visibility="Collapsed" 
-                    BorderBrush="White" BorderThickness="2"
-                    CornerRadius="5"
-                    IsHitTestVisible="False">
-                <TextBlock x:Name="DragPreviewText" Foreground="White" FontSize="10"
-                          HorizontalAlignment="Center" VerticalAlignment="Center"
-                          TextAlignment="Center"/>
-            </Border>
+            <visualControls:FieldCell x:Name="DragPreview" Visibility="Collapsed" IsHitTestVisible="False"/>
         </Canvas>
     </Grid>
 </UserControl>

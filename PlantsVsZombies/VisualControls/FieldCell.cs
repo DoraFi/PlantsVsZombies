@@ -5,36 +5,30 @@ namespace PlantsVsZombies.VisualControls;
 
 public class FieldCell : Grid
 {
-    private ContentControl _contentControl;
+    private readonly Viewbox _viewBox = new();
     
     public FieldCell()
     {
-        _contentControl = new ContentControl();
-        this.Children.Add(_contentControl);
+        this.Children.Add(_viewBox);
     }
     
     public required int Row { get; init; }
     public required int Column { get; init; }
 
-    private Plant? _plant;
-    public Plant? Plant
-    {
-        get => _plant;
-        private set
-        {
-            _plant = value;
-            _contentControl.Content = value;
-        }
-    }
-
     public void PlacePlant(PlantType plantType)
     {
-        Plant = plantType switch
+        _viewBox.Width = Width / 1.9;
+        _viewBox.Height = Height / 1.9;
+        _viewBox.Child = new ContentControl()
         {
-            PlantType.Shield => new PlantShield() { FieldCell = this },
-            PlantType.Generator => new PlantGenerator() { FieldCell = this },
-            PlantType.Shooter1 => new PlantShooter1() { FieldCell = this },
-            PlantType.Shooter2 => new PlantShooter2() { FieldCell = this },
+            Content = plantType switch
+            {
+                PlantType.Shield => new PlantShield() { FieldCell = this },
+                PlantType.Generator => new PlantGenerator() { FieldCell = this },
+                PlantType.Shooter1 => new PlantShooter1() { FieldCell = this },
+                PlantType.Shooter2 => new PlantShooter2() { FieldCell = this },
+                _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
+            }
         };
     }
 }

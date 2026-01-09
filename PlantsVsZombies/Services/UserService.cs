@@ -50,7 +50,7 @@ public class UserService
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(_users, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(UsersPath, json);
         }
-        catch
+        catch (Exception ex)
         {
             // Ignore save errors
         }

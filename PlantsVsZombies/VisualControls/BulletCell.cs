@@ -20,7 +20,6 @@ public class BulletCell : Image
         Height = 48;
         RenderTransformOrigin = new Point(0.5, 0.5);
         
-        // Setup rotation transform
         _rotateTransform = new RotateTransform();
         RenderTransform = _rotateTransform;
         

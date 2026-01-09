@@ -45,7 +45,6 @@ public class HealthToPercentageConverter : IMultiValueConverter
             return 0.0;
 
         var percentage = Math.Max(0, Math.Min(1, health / maxHealth));
-        // Account for border margin (1 pixel on each side = 2 total)
         var fillableWidth = width - 2;
         return Math.Max(0, fillableWidth * percentage);
     }
@@ -79,29 +78,24 @@ public class HealthToColorConverter : IMultiValueConverter
     {
         if (percentage > 0.6)
         {
-            // Green when health is above 60%
-            return Color.FromRgb(46, 204, 113); // Emerald green
+            return Color.FromRgb(46, 204, 113); 
         }
         else if (percentage > 0.3)
         {
-            // Yellow/Orange when health is between 30% and 60%
-            // Interpolate between yellow and orange
-            var factor = (percentage - 0.3) / 0.3; // 0 to 1 when percentage goes from 0.3 to 0.6
+            var factor = (percentage - 0.3) / 0.3;
             return Color.FromRgb(
-                (byte)(241 + (255 - 241) * (1 - factor)), // Yellow to Orange red
-                (byte)(196 + (152 - 196) * (1 - factor)), // Yellow to Orange green
-                (byte)(15 + (0 - 15) * (1 - factor))      // Yellow to Orange blue
+                (byte)(241 + (255 - 241) * (1 - factor)), 
+                (byte)(196 + (152 - 196) * (1 - factor)),
+                (byte)(15 + (0 - 15) * (1 - factor))  
             );
         }
         else
         {
-            // Red when health is below 30%
-            // Interpolate between orange-red and deep red
-            var factor = Math.Max(0, percentage / 0.3); // 0 to 1 when percentage goes from 0 to 0.3
+            var factor = Math.Max(0, percentage / 0.3);
             return Color.FromRgb(
-                (byte)(231 + (192 - 231) * (1 - factor)), // Orange-red to deep red
-                (byte)(76 + (57 - 76) * (1 - factor)),    // Orange-red to deep red
-                (byte)(60 + (43 - 60) * (1 - factor))     // Orange-red to deep red
+                (byte)(231 + (192 - 231) * (1 - factor)), 
+                (byte)(76 + (57 - 76) * (1 - factor)),    
+                (byte)(60 + (43 - 60) * (1 - factor))    
             );
         }
     }

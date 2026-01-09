@@ -43,7 +43,8 @@
             </Button>
             
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
-                <Button Content="Continue Game" Command="{Binding ContinueGameCommand}" 
+                <Button Content="Продолжить игру" Command="{Binding ContinueGameCommand}" 
+                        Style="{StaticResource GameButtonStyle}"
                         Margin="0,0,0,10" Padding="10" FontSize="16"
                         Visibility="{Binding HasActiveSession, Converter={StaticResource BoolToVisibilityConverter}}"/>
             </StackPanel>

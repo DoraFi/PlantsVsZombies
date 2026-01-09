@@ -11,15 +11,13 @@ public partial class StartNewGameViewModel : BaseViewModel
     [ObservableProperty]
     private LocationType _selectedLocation = LocationType.GrassLawn;
 
-    [ObservableProperty] private int _startDifficulty;
+    [ObservableProperty] private int _startDifficulty = ConfigService.GetConfig().Game.InitialDifficulty;
 
     public List<LocationType> Locations { get; } = new() { LocationType.GrassLawn, LocationType.SandBeach };
 
     [RelayCommand]
     private void StartGame()
     {
-        StartDifficulty = ConfigService.GetConfig().Game.InitialDifficulty;
-        
         if (StartDifficulty < 1)
         {
             MessageBox.Show("Начальная сложность не может быть меньше 1!");

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using PlantsVsZombies.Models.Zombie;
 using PlantsVsZombies.VisualControls;
@@ -23,10 +24,21 @@ public abstract partial class BasePlant : ObservableObject
     }
     
     public abstract void MakeAction(IEnumerable<BaseZombie> zombies);
-    
-    public FieldCell? FieldCell { get; set; }
-    public int Row => FieldCell?.Row ?? 0;
-    public int Column => FieldCell?.Column ?? 0;
+
+    [JsonIgnore]
+    public FieldCell? FieldCell
+    {
+        get => _fieldCell;
+        set
+        {
+            _fieldCell = value;
+            Row = value.Row;
+            Column = value.Column;
+        }
+    }
+    private FieldCell? _fieldCell;
+    public int Row { get; set; }
+    public int Column { get; set; }
 
     public double LastShootTime { get; set; }
     public double LastSunGenerationTime { get; set; }

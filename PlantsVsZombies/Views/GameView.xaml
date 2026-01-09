@@ -247,7 +247,7 @@
         </Border>
         
         <!-- Drag Preview -->
-        <Canvas x:Name="DragPreviewCanvas" IsHitTestVisible="False">
+        <Canvas x:Name="DragPreviewCanvas" IsHitTestVisible="False" Visibility="Collapsed">
             <visualControls:FieldCell x:Name="DragPreview" Visibility="Collapsed" IsHitTestVisible="False"/>
         </Canvas>
     </Grid>

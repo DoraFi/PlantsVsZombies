@@ -1,15 +1,9 @@
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Models.Plant;
@@ -50,8 +44,6 @@ public partial class GameView : UserControl
         
         CalculateCellSize();
         InitializeGameField();
-        SetupEventHandlers();
-        StartRendering();
         InitializeSunFallTimer();
         InitializeZombieSpawnTimer();
         InitializeActionTimer();
@@ -162,11 +154,6 @@ public partial class GameView : UserControl
         
     }
 
-    private void SummonSun(Point position)
-    {
-        
-    }
-
     private void ViewModelOnPaused()
     {
         _sunSpawnTimer.Stop();
@@ -233,6 +220,8 @@ public partial class GameView : UserControl
         Debug.WriteLine(nameof(RectOnDrop));
         if (e.Data.GetDataPresent(typeof(PlantType)) && sender is FieldCell fieldCell)
         {
+            fieldCell.Opacity = 1;
+            
             var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
             var plant = fieldCell.PlacePlant(plantType);
             
@@ -334,96 +323,18 @@ public partial class GameView : UserControl
     private void RectOnDragLeave(object sender, DragEventArgs e)
     {
         Debug.WriteLine(nameof(RectOnDragLeave));
+        if (sender is FieldCell fieldCell)
+        {
+            fieldCell.Opacity = 1;
+        }
     }
 
     private void RectOnDragEnter(object sender, DragEventArgs e)
     {
-        
-    }
-
-    private void SetupEventHandlers()
-    {
-        _viewModel.Plants.CollectionChanged += (s, e) => RenderGame();
-        _viewModel.Zombies.CollectionChanged += (s, e) =>
+        if (sender is FieldCell fieldCell)
         {
-            // Remove ZombieCells when zombies are removed
-            if (e.OldItems != null)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    foreach (BaseZombie zombie in e.OldItems)
-                    {
-                        if (_zombieCells.TryGetValue(zombie, out var zombieCell))
-                        {
-                            GameField.Children.Remove(zombieCell);
-                            _zombieCells.Remove(zombie);
-                        }
-                    }
-                });
-            }
-            RenderGame();
-        };
-        _viewModel.Bullets.CollectionChanged += (s, e) => RenderGame();
-        _viewModel.Suns.CollectionChanged += (s, e) => RenderGame();
-        
-        // Listen to property changes for position updates
-        _viewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(_viewModel.Session) || 
-                e.PropertyName == nameof(_viewModel.Session.SunBalance))
-            {
-                RenderGame();
-                UpdatePlantShopVisuals();
-            }
-        };
-        
-        // Update plant shop when sun balance changes
-        if (_viewModel.Session != null)
-        {
-            _viewModel.Session.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(_viewModel.Session.SunBalance))
-                {
-                    UpdatePlantShopVisuals();
-                }
-            };
+            fieldCell.Opacity = 0.75;
         }
-    }
-    
-    private void UpdatePlantShopVisuals()
-    {
-        return;
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            // Find all plant shop items and update their visual state
-            var itemsControl = LogicalTreeHelper.FindLogicalNode(this, "PlantShopItemsControl") as ItemsControl;
-            if (itemsControl == null)
-            {
-                // Try to find it by traversing
-                itemsControl = FindVisualChild<ItemsControl>(this);
-            }
-            
-            if (itemsControl != null)
-            {
-                foreach (var item in itemsControl.Items)
-                {
-                    if (item is PlantType plantType)
-                    {
-                        var container = itemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-                        if (container != null)
-                        {
-                            var border = FindVisualChild<Border>(container);
-                            if (border != null)
-                            {
-                                var canAfford = _viewModel.CanAffordPlant(plantType);
-                                border.Opacity = canAfford ? 1.0 : 0.5;
-                                border.Background = canAfford ? new SolidColorBrush(Color.FromRgb(45, 80, 22)) : new SolidColorBrush(Color.FromRgb(102, 102, 102));
-                            }
-                        }
-                    }
-                }
-            }
-        });
     }
     
     private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
@@ -439,145 +350,6 @@ public partial class GameView : UserControl
                 return childOfChild;
         }
         return null;
-    }
-
-    private void StartRendering()
-    {
-        var timer = new System.Windows.Threading.DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(16) // ~60 FPS for smooth animations
-        };
-        timer.Tick += (s, e) => 
-        {
-            RenderGame();
-        };
-        timer.Start();
-    }
-
-    private void RenderGame()
-    {
-        return;
-        /*
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            // Clear previous game objects (keep grid lines)
-            var toRemove = GameField.Children.OfType<FrameworkElement>()
-                .Where(c => c is not Line && c.Tag?.ToString() != "GridLine")
-                .ToList();
-            foreach (var element in toRemove)
-            {
-                GameField.Children.Remove(element);
-            }
-
-            // Render plants
-            foreach (var plant in _viewModel.Plants)
-            {
-                var rect = new Rectangle
-                {
-                    Width = _cellSize - 4,
-                    Height = _cellSize - 4,
-                    Fill = GetPlantColor(plant.Type),
-                    Stroke = plant.State == PlantState.Active ? Brushes.Orange : Brushes.Black,
-                    StrokeThickness = plant.State == PlantState.Active ? 3 : 2,
-                    Tag = "Plant"
-                };
-                Canvas.SetLeft(rect, plant.Column * _cellSize + 2);
-                Canvas.SetTop(rect, plant.Row * _cellSize + 2);
-                GameField.Children.Add(rect);
-                
-                var text = new TextBlock
-                {
-                    Text = plant.Type.ToString().Substring(0, Math.Min(3, plant.Type.ToString().Length)),
-                    FontSize = 10,
-                    Foreground = Brushes.White,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Tag = "Plant"
-                };
-                Canvas.SetLeft(text, plant.Column * _cellSize + _cellSize / 2 - 15);
-                Canvas.SetTop(text, plant.Row * _cellSize + _cellSize / 2 - 8);
-                GameField.Children.Add(text);
-            }
-
-            // Render zombies
-            foreach (var zombie in _viewModel.Zombies)
-            {
-                var rect = new Rectangle
-                {
-                    Width = _cellSize - 4,
-                    Height = _cellSize - 4,
-                    Fill = GetZombieColor(zombie.Type),
-                    Stroke = Brushes.Red,
-                    StrokeThickness = 2,
-                    Tag = "Zombie"
-                };
-                Canvas.SetLeft(rect, zombie.X);
-                Canvas.SetTop(rect, zombie.Row * _cellSize + 2);
-                GameField.Children.Add(rect);
-            }
-
-            // Render bullets
-            foreach (var bullet in _viewModel.Bullets)
-            {
-                var bulletVisual = new Image()
-                {
-             
-                    Width = 24,
-                    Height = 24,
-                };
-                bulletVisual.StartSpinningAnimation();
-                
-                Canvas.SetLeft(bulletVisual, bullet.X - 5);
-                Canvas.SetTop(bulletVisual, bullet.Row * _cellSize + _cellSize / 2d - 5);
-                GameField.Children.Add(bulletVisual);
-            }
-
-            // Render suns with animations - use actual animated positions
-            foreach (var sun in _viewModel.Suns)
-            {
-                var sunVisual = new Image()
-                {
-                    Source = new BitmapImage(
-                        new Uri("pack://application:,,,/Assets/Icons/sun.png")),
-                    Width = 48,
-                    Tag = "Sun",
-                    Cursor = Cursors.Hand,
-                };
-                
-                // Use current animated position (centered)
-                Canvas.SetLeft(sunVisual, sun.X - 15);
-                Canvas.SetTop(sunVisual, sun.Y - 15);
-                sunVisual.MouseLeftButtonDown += (s, e) =>
-                {
-                    var pos = e.GetPosition(GameField);
-                    _viewModel.PickupSun(pos.X, pos.Y);
-                };
-                GameField.Children.Add(sunVisual);
-            }
-        });
-        */
-    }
-    
-    private Brush GetPlantColor(PlantType type)
-    {
-        return type switch
-        {
-            PlantType.Shooter1 => Brushes.Green,
-            PlantType.Shooter2 => Brushes.DarkGreen,
-            PlantType.Shield => Brushes.Brown,
-            PlantType.Generator => Brushes.Yellow,
-            _ => Brushes.Gray
-        };
-    }
-
-    private Brush GetZombieColor(ZombieType type)
-    {
-        return type switch
-        {
-            ZombieType.ZombieBoy => Brushes.Pink,
-            ZombieType.ZombieGirl => Brushes.Blue,
-            _ => Brushes.Gray
-        };
     }
 
     private void PlantShopItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

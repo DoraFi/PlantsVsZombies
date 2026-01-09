@@ -25,7 +25,7 @@ public abstract partial class BasePlant : ObservableObject
     
     public abstract void MakeAction(IEnumerable<BaseZombie> zombies);
 
-    [JsonIgnore]
+    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
     public FieldCell? FieldCell
     {
         get => _fieldCell;

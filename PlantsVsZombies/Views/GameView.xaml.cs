@@ -47,6 +47,20 @@ public partial class GameView : UserControl
         InitializeSunFallTimer();
         InitializeZombieSpawnTimer();
         InitializeActionTimer();
+        
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            foreach (var zombie in _viewModel.Session.Zombies.ToList())
+            {
+                SpawnZombie(zombie);
+            }
+        }
+        catch {}
     }
 
     private void InitializeActionTimer()
@@ -110,19 +124,8 @@ public partial class GameView : UserControl
                         _columns, row, _cellSize, _viewModel.Session.Location),
                     _ => throw new ArgumentOutOfRangeException(nameof(zombieType), zombieType, null)
                 };
+                SpawnZombie(baseZombie);
 
-                _viewModel.Zombies.Add(baseZombie);
-
-                // Create ZombieCell and set the zombie
-                var zombieCell = new ZombieCell(_cellSize);
-                zombieCell.SetZombie(baseZombie);
-
-                // Store mapping for cleanup
-                _zombieCells[baseZombie] = zombieCell;
-
-                baseZombie.KillRequested += BaseZombieOnKillRequested;
-
-                GameField.Children.Add(zombieCell);
             });
         }
         catch (Exception ex)
@@ -130,7 +133,23 @@ public partial class GameView : UserControl
             
         }
     }
+    
+    private void SpawnZombie(BaseZombie baseZombie) 
+    {
+        _viewModel.Zombies.Add(baseZombie);
 
+        // Create ZombieCell and set the zombie
+        var zombieCell = new ZombieCell(_cellSize);
+        zombieCell.SetZombie(baseZombie);
+
+        // Store mapping for cleanup
+        _zombieCells[baseZombie] = zombieCell;
+
+        baseZombie.KillRequested += BaseZombieOnKillRequested;
+
+        GameField.Children.Add(zombieCell);
+    }
+        
     private void BaseZombieOnKillRequested(BaseZombie obj)
     {
         try
@@ -326,6 +345,11 @@ public partial class GameView : UserControl
 
             _bulletCells.Add(bullet, bulletCell);
         });
+    }
+
+    public void SpawnBullet(Bullet bullet)
+    {
+        
     }
 
     private void BulletOnKillRequested(Bullet obj)

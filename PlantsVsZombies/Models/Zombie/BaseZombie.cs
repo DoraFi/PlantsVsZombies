@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using PlantsVsZombies.Services;
@@ -73,8 +74,8 @@ public abstract partial class BaseZombie : ObservableObject
     [ObservableProperty]
     private double _damage;
     
-    [ObservableProperty]
-    private FieldCell? _currentFieldCell;
+    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    public FieldCell? CurrentFieldCell;
     
     [ObservableProperty] 
     private ZombieState _state;

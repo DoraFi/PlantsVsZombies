@@ -59,6 +59,13 @@ public partial class GameView : UserControl
             {
                 SpawnZombie(zombie);
             }
+            
+            foreach (var plant in _viewModel.Session.Plants.ToList())
+            {
+                var fieldCell = _fieldCells.FirstOrDefault(x => x.Column == plant.Column && x.Row == plant.Row);
+                if (fieldCell != null)
+                    fieldCell.PlacePlant(plant.Type);
+            }
         }
         catch {}
     }

@@ -1,5 +1,5 @@
 using System.IO;
-using Newtonsoft.Json;
+using System.Xml.Serialization;
 using PlantsVsZombies.Models;
 
 namespace PlantsVsZombies.Services;
@@ -10,7 +10,7 @@ public class ConfigService
     private static readonly string ConfigPath = Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory, 
         "Config", 
-        "gameconfig.json");
+        "gameconfig.xml");
 
     public static GameConfig GetConfig()
     {
@@ -21,25 +21,28 @@ public class ConfigService
         var paths = new[]
         {
             ConfigPath,
-            Path.Combine(Directory.GetCurrentDirectory(), "Config", "gameconfig.json"),
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "PlantsVsZombies", "Config", "gameconfig.json")
+            Path.Combine(Directory.GetCurrentDirectory(), "Config", "gameconfig.xml"),
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "PlantsVsZombies", "Config", "gameconfig.xml")
         };
 
-        string? configContent = null;
+        string? configFilePath = null;
         foreach (var path in paths)
         {
             if (File.Exists(path))
             {
-                configContent = File.ReadAllText(path);
+                configFilePath = path;
                 break;
             }
         }
 
-        if (configContent == null)
+        if (configFilePath == null)
             throw new FileNotFoundException($"Config file not found. Tried: {string.Join(", ", paths)}");
 
-        _config = JsonConvert.DeserializeObject<GameConfig>(configContent) 
+        var serializer = new XmlSerializer(typeof(GameConfig));
+        using var reader = new StreamReader(configFilePath);
+        _config = (GameConfig?)serializer.Deserialize(reader) 
             ?? throw new InvalidOperationException("Failed to deserialize config");
+        
         return _config;
     }
 }

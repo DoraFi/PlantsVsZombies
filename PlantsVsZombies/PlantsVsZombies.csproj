@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Config\gameconfig.json">
+        <None Update="Config\gameconfig.xml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

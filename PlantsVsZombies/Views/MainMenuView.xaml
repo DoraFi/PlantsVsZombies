@@ -4,26 +4,97 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
+             xmlns:visualControls="clr-namespace:PlantsVsZombies.VisualControls"
              mc:Ignorable="d" 
              
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1080" d:DesignWidth="1920">
     
     <UserControl.DataContext>
         <viewModels:MainMenuViewModel/>
     </UserControl.DataContext>
     
-    <Grid Background="#FF2D5016">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
-            <TextBlock Text="Plants vs Zombies" FontSize="32" FontWeight="Bold" 
-                       Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+    <Grid>
+        <Image Source="/Assets/Icons/mainBack.jpg"></Image>
+        
+        <visualControls:CancelButton 
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="60,60,60,0"/>
+        
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Command="{Binding SignOutCommand}" 
+                    Background="Transparent" 
+                    BorderThickness="0"
+                    Margin="80,0,0,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Button.Template>
+                <Border Background="{StaticResource DarkBrush}" 
+                        CornerRadius="30" 
+                        Width="160" 
+                        Height="160"
+                        Margin="0,0,80,0">
+                    <Image x:Name="LogoutIcon" 
+                           Height="100" 
+                           Source="/Assets/Icons/Logout.png"/>
+                </Border>
+            </Button>
             
-            <Button Content="Continue Game" Command="{Binding ContinueGameCommand}" 
-                    Margin="0,0,0,10" Padding="10" FontSize="16"
-                    Visibility="{Binding HasActiveSession, Converter={StaticResource BoolToVisibilityConverter}}"/>
-            <Button Content="Start New Game" Command="{Binding StartNewGameCommand}" 
-                    Margin="0,0,0,10" Padding="10" FontSize="16"/>
-            <Button Content="Sign Out" Command="{Binding SignOutCommand}" 
-                    Padding="10" FontSize="16"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+                <Button Content="Continue Game" Command="{Binding ContinueGameCommand}" 
+                        Margin="0,0,0,10" Padding="10" FontSize="16"
+                        Visibility="{Binding HasActiveSession, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            </StackPanel>
+            <Button Command="{Binding StartNewGameCommand}" 
+                    Background="Transparent" 
+                    BorderThickness="0"
+                    Margin="80,0,0,0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Button.Template>
+    
+                <Border Background="{StaticResource DarkBrush}" 
+                        CornerRadius="30" 
+                        Width="160" 
+                        Height="160">
+                    <Image x:Name="StartGame" 
+                           Height="100" 
+                           Source="/Assets/Icons/startGameIcon.png"/>
+                </Border>
+            </Button>
         </StackPanel>
+        
+        
+        <Button x:Name="CheckInfoButton" 
+                HorizontalAlignment="Right"
+                Command="{Binding OpenInfoViewCommand}"
+            
+                VerticalAlignment="Bottom"
+                Margin="60,0,60,60"
+                Background="Transparent" 
+                BorderThickness="0">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="Transparent">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+            
+            <Border Background="{StaticResource DarkBrush}" 
+                    CornerRadius="10" 
+                    Width="80" 
+                    Height="80">
+                <Image x:Name="InfoIcon" 
+                       Height="40" 
+                       Source="/Assets/Icons/InfoIcon.jpg"/>
+            </Border>
+        </Button>
+   
     </Grid>
 </UserControl>

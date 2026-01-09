@@ -1,0 +1,215 @@
+<UserControl x:Class="PlantsVsZombies.VisualControls.LocationCarousel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:models="clr-namespace:PlantsVsZombies.Models"
+             xmlns:helpers="clr-namespace:PlantsVsZombies.Helpers"
+             xmlns:local="clr-namespace:PlantsVsZombies.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <UserControl.Resources>
+        <local:LocationTypeConverter x:Key="LocationTypeConverter"/>
+        <local:LocationToImageConverter x:Key="LocationToImageConverter"/>
+        <local:LocationToBorderBrushConverter x:Key="LocationToBorderBrushConverter"/>
+        <local:LocationToIndicatorConverter x:Key="LocationToIndicatorConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Carousel Container -->
+        <Border Grid.Row="0" 
+                BorderBrush="#888" 
+                BorderThickness="2" 
+                CornerRadius="8"
+                Background="#F0F0F0"
+                Padding="5">
+            <Grid>
+                <!-- Navigation Arrow Left -->
+                <Button x:Name="LeftButton" 
+                        Content="◄" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Center"
+                        Width="40" 
+                        Height="40"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Background="#80000000"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="LeftButton_Click"
+                        Opacity="0.7"
+                        Margin="10,0,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="20"
+                                                Opacity="{TemplateBinding Opacity}"
+                                                x:Name="Border">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Border" Property="Opacity" Value="1.0"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- Navigation Arrow Right -->
+                <Button x:Name="RightButton" 
+                        Content="►" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"
+                        Width="40" 
+                        Height="40"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Background="#80000000"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="RightButton_Click"
+                        Opacity="0.7"
+                        Margin="0,0,10,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="20"
+                                                Opacity="{TemplateBinding Opacity}"
+                                                x:Name="Border">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Border" Property="Opacity" Value="1.0"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- Location Items Container -->
+                <ScrollViewer x:Name="LocationScrollViewer" 
+                              HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Disabled"
+                              CanContentScroll="True"
+                              ScrollChanged="LocationScrollViewer_ScrollChanged">
+                    <ItemsControl x:Name="LocationItemsControl" 
+                                  ItemsSource="{Binding Locations, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.Resources>
+                            <local:LocationTypeConverter x:Key="LocationTypeConverter"/>
+                            <local:LocationToImageConverter x:Key="LocationToImageConverter"/>
+                            <local:LocationToBorderBrushConverter x:Key="LocationToBorderBrushConverter"/>
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:LocationType}">
+                                <Border Width="380" 
+                                        Height="230" 
+                                        Margin="10,5"
+                                        BorderThickness="3"
+                                        CornerRadius="8"
+                                        Background="White"
+                                        Cursor="Hand"
+                                        MouseLeftButtonDown="LocationItem_MouseLeftButtonDown">
+                                    <Border.BorderBrush>
+                                        <MultiBinding Converter="{StaticResource LocationToBorderBrushConverter}">
+                                            <Binding Path="SelectedLocation" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                            <Binding/>
+                                        </MultiBinding>
+                                    </Border.BorderBrush>
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="10" 
+                                                          ShadowDepth="3" 
+                                                          Opacity="0.5"/>
+                                    </Border.Effect>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!-- Location Background Image -->
+                                        <Image Grid.Row="0" 
+                                               Source="{Binding Converter={StaticResource LocationToImageConverter}}"
+                                               Stretch="UniformToFill"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
+                                        
+                                        <!-- Location Name -->
+                                        <Border Grid.Row="1" 
+                                                Background="#CC000000"
+                                                Height="40"
+                                                VerticalAlignment="Bottom">
+                                            <TextBlock Text="{Binding Converter={StaticResource LocationTypeConverter}}"
+                                                       Foreground="White"
+                                                       FontSize="18"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+        
+        <!-- Location Indicators -->
+        <ItemsControl Grid.Row="1" 
+                      ItemsSource="{Binding Locations, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      HorizontalAlignment="Center"
+                      Margin="0,10,0,0">
+            <ItemsControl.Resources>
+                <local:LocationToIndicatorConverter x:Key="LocationToIndicatorConverter"/>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:LocationType}">
+                    <Ellipse Width="12" 
+                             Height="12" 
+                             Margin="5,0"
+                             Cursor="Hand"
+                             MouseLeftButtonDown="Indicator_MouseLeftButtonDown">
+                        <Ellipse.Fill>
+                            <MultiBinding Converter="{StaticResource LocationToIndicatorConverter}">
+                                <Binding Path="SelectedLocation" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                <Binding/>
+                            </MultiBinding>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

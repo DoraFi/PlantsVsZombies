@@ -4,31 +4,57 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PlantsVsZombies.ViewModels"
+             xmlns:visualControls="clr-namespace:PlantsVsZombies.VisualControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1080" d:DesignWidth="1920">
     
     <UserControl.DataContext>
         <viewModels:SignUpViewModel/>
     </UserControl.DataContext>
     
-    <Grid Background="#FF2D5016">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
-            <TextBlock Text="Sign Up" FontSize="32" FontWeight="Bold" 
-                       Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+    <Grid>
+        <Image Source="/Assets/Icons/SignBackgroung.jpg"></Image>
+        
+        <visualControls:CancelButton 
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="60,60,60,0"/>
+        
+        <Border Style="{StaticResource BorderStackPanelStyle}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="607" >
+                <TextBlock Text="Добро пожаловать!" Style="{StaticResource CenterTextStyle}" 
+                           Width="527" Margin="0,40,0,30"/>
             
-            <TextBlock Text="Login:" Foreground="White" Margin="0,0,0,5"/>
-            <TextBox Text="{Binding Login}" Margin="0,0,0,20" Padding="5"/>
+                <TextBlock Text="Введите ваш никнейм:" Style="{StaticResource LeftTextStyle}"/>
+                <Border Style="{StaticResource BorderStyle}">
+                    <TextBox Text="{Binding Login}" Style="{StaticResource TextBoxStyle}" Width="426"/>
+                </Border>
+                
+                <TextBlock Text="Введите пароль:" Style="{StaticResource LeftTextStyle}"/>
+                <Border Style="{StaticResource BorderStyle}">
+                    <PasswordBox x:Name="PasswordBox"  Style="{StaticResource PasswordBoxStyle}" Width="426"/>
+                </Border>          
+                
+                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource LeftTextStyle}" Foreground="Red" 
+                           Margin="40,0,40,10" TextWrapping="Wrap" MinHeight="30"/>
             
-            <TextBlock Text="Password:" Foreground="White" Margin="0,0,0,5"/>
-            <PasswordBox x:Name="PasswordBox" Margin="0,0,0,20" Padding="5"/>
-            
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" 
-                       Margin="0,0,0,10" TextWrapping="Wrap" MinHeight="30"/>
-            
-            <Button x:Name="SignUpCommandButton" Content="Sign Up" Command="{Binding SignUpCommand}" 
-                    Margin="0,0,0,10" Padding="10" FontSize="16"/>
-            <Button Content="Back to Sign In" Command="{Binding BackToSignInCommand}" 
-                    Padding="10" FontSize="16"/>
-        </StackPanel>
+                <Grid Margin="40,0,40,40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+    
+                    <Border Grid.Column="0"  HorizontalAlignment="Left">
+                        <Button x:Name="SignUpCommandButton" Content="Зарегистрироваться" Command="{Binding SignUpCommand}" 
+                                Style="{StaticResource GameButtonStyle}" HorizontalAlignment="Center" />
+                    </Border>
+    
+                    <Border Grid.Column="1"  HorizontalAlignment="Right">
+                        <Button Content="Вернуться ко входу" Command="{Binding BackToSignInCommand}" 
+                                Style="{StaticResource GameButtonStyle}" HorizontalAlignment="Center"/>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

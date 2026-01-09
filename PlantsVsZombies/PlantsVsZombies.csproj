@@ -68,6 +68,24 @@
         <Resource Include="Assets\Icons\shooter1_bullet.png" />
         <None Remove="Assets\Icons\shooter2_bullet.png" />
         <Resource Include="Assets\Icons\shooter2_bullet.png" />
+        <None Remove="Assets\Icons\CancelApp.png" />
+        <Resource Include="Assets\Icons\CancelApp.png" />
+        <None Remove="Assets\Icons\InfoBack.jpg" />
+        <Resource Include="Assets\Icons\InfoBack.jpg" />
+        <None Remove="Assets\Icons\InfoIcon.jpg" />
+        <Resource Include="Assets\Icons\InfoIcon.jpg" />
+        <None Remove="Assets\Icons\Logout.png" />
+        <Resource Include="Assets\Icons\Logout.png" />
+        <None Remove="Assets\Icons\LogoutIcon.jpg" />
+        <Resource Include="Assets\Icons\LogoutIcon.jpg" />
+        <None Remove="Assets\Icons\SignBackgroung.jpg" />
+        <Resource Include="Assets\Icons\SignBackgroung.jpg" />
+        <None Remove="Assets\Icons\startGameIcon.png" />
+        <Resource Include="Assets\Icons\startGameIcon.png" />
+        <None Remove="Assets\Icons\startNewGameBackground.png" />
+        <Resource Include="Assets\Icons\startNewGameBackground.png" />
+        <None Remove="Assets\Icons\mainBack.jpg" />
+        <Resource Include="Assets\Icons\mainBack.jpg" />
     </ItemGroup>
 
     <ItemGroup>

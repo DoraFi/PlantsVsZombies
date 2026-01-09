@@ -35,7 +35,6 @@ public class BulletCell : Image
         
         SetBullet(bullet);
         
-        // Start animation after element is loaded (when name scope is available)
         Loaded += BulletCell_Loaded;
     }
     
@@ -46,12 +45,10 @@ public class BulletCell : Image
     
     private void StartSpinningAnimation()
     {
-        if (_rotateTransform == null || _rotationStoryboard != null) return; // Prevent multiple calls
+        if (_rotateTransform == null || _rotationStoryboard != null) return; 
         
-        // Create and store storyboard to prevent garbage collection
         _rotationStoryboard = new Storyboard();
         
-        // Use property path directly instead of named targets (avoids name registration issues)
         var animation = new DoubleAnimation
         {
             From = 0,
@@ -60,7 +57,6 @@ public class BulletCell : Image
             RepeatBehavior = RepeatBehavior.Forever
         };
         
-        // Target the transform directly using property path from the Image element
         Storyboard.SetTargetProperty(animation, new PropertyPath("(UIElement.RenderTransform).(RotateTransform.Angle)"));
         
         _rotationStoryboard.Children.Add(animation);
@@ -69,7 +65,6 @@ public class BulletCell : Image
     
     public void SetBullet(Bullet bullet)
     {
-        // Bind position to bullet's X property
         var leftBinding = new Binding(nameof(bullet.X))
         {
             Source = bullet,

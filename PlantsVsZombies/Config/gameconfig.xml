@@ -69,7 +69,7 @@
     <SunValue>500</SunValue>
     <SunPickupTimeout>7.0</SunPickupTimeout>
     <DifficultyIncreaseInterval>30.0</DifficultyIncreaseInterval>
-    <InitialDifficulty>20</InitialDifficulty>
+    <InitialDifficulty>1</InitialDifficulty>
     <MaxDifficulty>10</MaxDifficulty>
     <ZombiesPerDifficulty>2</ZombiesPerDifficulty>
     <FPS>60</FPS>

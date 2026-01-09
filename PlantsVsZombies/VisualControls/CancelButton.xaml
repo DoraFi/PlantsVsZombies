@@ -1,0 +1,34 @@
+<UserControl x:Class="PlantsVsZombies.VisualControls.CancelButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PlantsVsZombies.VisualControls"
+             mc:Ignorable="d"
+             d:DesignHeight="100" d:DesignWidth="100">
+    <Grid Background="Transparent">
+        <Button x:Name="CancelAppButton" 
+                Click="CancelAppButton_Click" 
+                Background="Transparent" 
+                BorderThickness="0">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="Transparent">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+            
+            <Border Background="{StaticResource DarkBrush}" 
+                    CornerRadius="10" 
+                    Width="80" 
+                    Height="80">
+                <Image x:Name="CancelAppIcon" 
+                       Width="40" 
+                       Height="40" 
+                       Source="/Assets/Icons/CancelApp.png"/>
+            </Border>
+        </Button>
+    </Grid>
+</UserControl>

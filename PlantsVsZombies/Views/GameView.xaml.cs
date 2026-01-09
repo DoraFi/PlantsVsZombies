@@ -240,12 +240,18 @@ public partial class GameView : UserControl
 
     private void PlantGeneratorOnSunSpawnRequested(PlantGenerator obj)
     {
+        double x = obj.Column * _cellSize + _cellSize / 2;
+        double y = obj.Row * _cellSize + _cellSize / 2;
+        SpawnSun(x, y);
+    }
+
+    private void SpawnSun(double x, double y)
+    {
         Application.Current.Dispatcher.Invoke(() =>
         {
             var sun = new Sun()
             {
-                X = obj.Column * _cellSize + _cellSize / 2,
-                Y = obj.Row * _cellSize + _cellSize / 2,
+                X = x, Y = y
             };
 
             var rnd = new Random();

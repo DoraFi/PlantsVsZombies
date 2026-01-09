@@ -28,10 +28,10 @@ public partial class SignInView : UserControl
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
 #if DEBUG
-        await Task.Delay(500);
-        ViewModel.Login = "lev";
-        ViewModel.Password = "lev";
-        ViewModel.SignInCommand.Execute(null);
+        //await Task.Delay(500);
+       // ViewModel.Login = "lev";
+       // ViewModel.Password = "lev";
+       // ViewModel.SignInCommand.Execute(null);
 #endif
     }
     

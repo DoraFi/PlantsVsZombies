@@ -202,7 +202,8 @@
         
         <!-- Menu Button (Top Right) -->
         <Button Content="Меню" Command="{Binding ToggleMenuCommand}" 
-                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Style="{StaticResource GameButtonStyle}" HorizontalAlignment="Right"
+                  VerticalAlignment="Top" 
                 Margin="10" Padding="10,5"/>
 
 

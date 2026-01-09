@@ -12,8 +12,8 @@ public class LocationTypeConverter : IValueConverter
         {
             return location switch
             {
-                LocationType.SandBeach => "Sand Beach",
-                LocationType.GrassLawn => "Grass Lawn",
+                LocationType.SandBeach => "Песочный пляж",
+                LocationType.GrassLawn => "Стандартный",
                 _ => location.ToString()
             };
         }

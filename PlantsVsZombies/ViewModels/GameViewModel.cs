@@ -53,6 +53,11 @@ public partial class GameViewModel : BaseViewModel
         return _gameService.CanAffordPlant(Session, plantType);
     }
 
+    public bool CanPlacePlant(PlantType plantType, int row, int column)
+    {
+        return _gameService.CanPlacePlant(Session, row, column, plantType);
+    }
+
     public GameViewModel(GameSession session)
     {
         _gameService = new GameService();
@@ -148,6 +153,7 @@ public partial class GameViewModel : BaseViewModel
         {
             _gameService.PlacePlant(Session, row, column, plantType);
             OnPropertyChanged(nameof(Plants));
+            OnPropertyChanged(nameof(Session));
         }
     }
 

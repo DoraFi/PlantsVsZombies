@@ -223,8 +223,21 @@ public partial class GameView : UserControl
             fieldCell.Opacity = 1;
             
             var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
-            var plant = fieldCell.PlacePlant(plantType);
             
+            // Place the plant (this checks affordability and deducts the cost)
+            // We need to do this BEFORE adding the plant to the collection, otherwise
+            // CanPlacePlant will return false because it sees a plant already at that position
+            if (!_viewModel.CanPlacePlant(plantType, fieldCell.Row, fieldCell.Column))
+            {
+                HideDragPreview();
+                return;
+            }
+            
+            // Deduct the cost by calling PlacePlant BEFORE adding to collection
+            _viewModel.PlacePlant(plantType, fieldCell.Row, fieldCell.Column);
+            
+            // Now create and add the plant to the collection
+            var plant = fieldCell.PlacePlant(plantType);
             _viewModel.Plants.Add(plant);
             plant.KillRequested += PlantOnKillRequested;
             plant.BulletSpawnRequested += PlantOnBulletSpawnRequested;
@@ -233,7 +246,6 @@ public partial class GameView : UserControl
                 plantGenerator.SunSpawnRequested += PlantGeneratorOnSunSpawnRequested;
             }
             
-            _viewModel.PlacePlant(plantType, fieldCell.Row, fieldCell.Column);
             HideDragPreview();
         }
     }

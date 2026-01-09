@@ -12,16 +12,69 @@
              Canvas.Top="{Binding Y}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Image x:Name="ShieldImage"
-           RenderTransformOrigin="0.5,0.5"
+           RenderTransformOrigin="0.5,1"
            Source="{Binding ZombieImageSource}">
         <Image.RenderTransform>
             <TransformGroup>
                 <ScaleTransform x:Name="ShieldScale"/>
+                <RotateTransform x:Name="Rotate"/>
             </TransformGroup>
         </Image.RenderTransform>
+        
+        <Image.Style>
+            <Style TargetType="{x:Type Image}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding State}" Value="{x:Static zombie:ZombieState.Dead}">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <!-- Rotate 90 degrees and stay there -->
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(RotateTransform.Angle)"
+                                        From="0"
+                                        To="90"
+                                        Duration="0:0:0.5"
+                                        FillBehavior="HoldEnd">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseIn"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                    
+                                    <!-- Fade out -->
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="1"
+                                        To="0"
+                                        BeginTime="0:0:0.3"
+                                        Duration="0:0:0.4"
+                                        FillBehavior="HoldEnd">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                    
+                                    <!-- Drop down slightly -->
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                        From="1.0"
+                                        To="0.7"
+                                        Duration="0:0:0.5"
+                                        FillBehavior="HoldEnd">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseIn"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Image.Style>
+        
         <Image.Triggers>
             <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                <BeginStoryboard>
+                <BeginStoryboard Name="PulseAnimation">
                     <Storyboard RepeatBehavior="Forever">
                         <!-- Gentle pulse animation -->
                         <DoubleAnimation

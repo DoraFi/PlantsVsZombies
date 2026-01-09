@@ -64,6 +64,10 @@
         <Resource Include="Assets\Icons\SandZombieBoy.png" />
         <None Remove="Assets\Icons\SandZombieGirl.png" />
         <Resource Include="Assets\Icons\SandZombieGirl.png" />
+        <None Remove="Assets\Icons\shooter1_bullet.png" />
+        <Resource Include="Assets\Icons\shooter1_bullet.png" />
+        <None Remove="Assets\Icons\shooter2_bullet.png" />
+        <Resource Include="Assets\Icons\shooter2_bullet.png" />
     </ItemGroup>
 
     <ItemGroup>

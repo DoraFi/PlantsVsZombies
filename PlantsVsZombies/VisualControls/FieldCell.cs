@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Models.Plant;
 
@@ -14,6 +15,7 @@ public class FieldCell : Grid
     public FieldCell()
     {
         this.Children.Add(_viewBox);
+        
     }
 
     private BasePlant? _plant;
@@ -52,9 +54,10 @@ public class FieldCell : Grid
                         {
                             HorizontalAlignment = HorizontalAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Top,
-                            Margin = new Thickness(0, 5, 0, 0),
-                            Width = cellWidth * 0.6
+                            Width = cellWidth * 0.6,
+                            
                         };
+                        _healthBar.SetValue(Panel.ZIndexProperty, 10000);
                         _healthBar.SetBinding(HealthBar.HealthProperty, new Binding(nameof(value.Health)) { Source = value });
                         _healthBar.SetBinding(HealthBar.MaxHealthProperty, new Binding(nameof(value.MaxHealth)) { Source = value });
                         this.Children.Add(_healthBar);
@@ -85,7 +88,7 @@ public class FieldCell : Grid
     public required int Row { get; init; }
     public required int Column { get; init; }
 
-    public void PlacePlant(PlantType plantType)
+    public BasePlant PlacePlant(PlantType plantType)
     {
         _viewBox.Width = Width / 1.9;
         _viewBox.Height = Height / 1.9;
@@ -97,5 +100,6 @@ public class FieldCell : Grid
             PlantType.Shooter2 => new PlantShooter2() { FieldCell = this },
             _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
         };
+        return Plant;
     }
 }

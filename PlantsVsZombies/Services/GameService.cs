@@ -23,7 +23,7 @@ public class GameService
             Location = location,
             Difficulty = initialDifficulty,
             Score = 0,
-            SunBalance = 50,
+            SunBalance = ConfigService.GetConfig().Game.SunValue,
             LastZombieSpawnTime = 0,
             LastSunFallTime = 0,
             LastDifficultyIncreaseTime = 0,
@@ -154,6 +154,7 @@ public class GameService
     }
 */
     
+/*
     private void UpdatePlants(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
         foreach (var plant in session.Plants.ToList())
@@ -244,7 +245,9 @@ public class GameService
             }
         }
     }
+    */
 
+/*
     private void UpdateBullets(GameSession session, double deltaTime, double cellSize)
     {
         var bulletsToRemove = new List<Bullet>();
@@ -350,6 +353,7 @@ public class GameService
             session.Suns.Remove(sun);
         }
     }
+    */
 
     private void FallSunFromSky(GameSession session, double currentTime, double cellSize)
     {

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using PlantsVsZombies.Helpers;
 using PlantsVsZombies.Models;
 using PlantsVsZombies.Models.Plant;
@@ -30,8 +33,11 @@ public partial class GameView : UserControl
     private int _columns;
     private System.Timers.Timer _sunSpawnTimer;
     private System.Timers.Timer _zombieSpawnTimer;
-    private System.Timers.Timer _zombieActionTimer;
+    private System.Timers.Timer _actionTimer;
     private List<FieldCell> _fieldCells = new();
+    private Dictionary<BaseZombie, ZombieCell> _zombieCells = new();
+    private Dictionary<Bullet, BulletCell> _bulletCells = new();
+    private Dictionary<Sun, SunCell> _sunCells = new();
 
     public GameView(GameViewModel viewModel)
     {
@@ -48,22 +54,32 @@ public partial class GameView : UserControl
         StartRendering();
         InitializeSunFallTimer();
         InitializeZombieSpawnTimer();
-        InitializeZombieActionTimer();
+        InitializeActionTimer();
     }
 
-    private void InitializeZombieActionTimer()
+    private void InitializeActionTimer()
     {
         var fps = ConfigService.GetConfig().Game.FPS;
-        _zombieActionTimer = new Timer(TimeSpan.FromSeconds(1) / fps);
-        _zombieActionTimer.Start();
-        _zombieActionTimer.Elapsed += ZombieActionTimerOnElapsed;
+        _actionTimer = new Timer(TimeSpan.FromSeconds(1) / fps);
+        _actionTimer.Start();
+        _actionTimer.Elapsed += ActionTimerOnElapsed;
     }
 
-    private void ZombieActionTimerOnElapsed(object? sender, ElapsedEventArgs e)
+    private void ActionTimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
         foreach (var zombie in _viewModel.Zombies.ToList())
         {
             zombie.MakeAction();
+        }
+
+        foreach (var bullet in _viewModel.Bullets.ToList())
+        {
+            bullet.MakeAction(_viewModel.Zombies);
+        }
+        
+        foreach (var plant in _viewModel.Plants.ToList())
+        {
+            plant.MakeAction(_viewModel.Zombies);
         }
     }
 
@@ -101,66 +117,35 @@ public partial class GameView : UserControl
             
             _viewModel.Zombies.Add(baseZombie);
 
-            // Create a container canvas for the zombie and health bar
-            var zombieContainer = new Grid()
-            {
+            // Create ZombieCell and set the zombie
+            var zombieCell = new ZombieCell(_cellSize);
+            zombieCell.SetZombie(baseZombie);
 
-            };
+            // Store mapping for cleanup
+            _zombieCells[baseZombie] = zombieCell;
             
-            var viewbox = new Viewbox()
-            {
-                Width = _cellSize * 2.25,
-                Height = _cellSize * 2.25,
-                Stretch = Stretch.Uniform,
-                Child = new ContentControl()
-                {
-                    Content = baseZombie,
-                }
-            };
-
-            // Create health bar (positioned like in FieldCell)
-            var healthBarWidth = _cellSize * 0.6;
-            var healthBar = new HealthBar
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Margin = new Thickness(-150, 5, 0, 0),
-                Width = healthBarWidth
-            };
-            healthBar.SetBinding(HealthBar.HealthProperty, new Binding(nameof(baseZombie.Health))
-            {
-                Source = baseZombie,
-                Mode = BindingMode.OneWay
-            });
-            healthBar.SetBinding(HealthBar.MaxHealthProperty, new Binding(nameof(baseZombie.MaxHealth))
-            {
-                Source = baseZombie,
-                Mode = BindingMode.OneWay
-            });
-
-            // Add viewbox and health bar to container (order matters - health bar on top)
-            zombieContainer.Children.Add(viewbox);
-            zombieContainer.Children.Add(healthBar);
-
-            // Bind container position to zombie position
-            var leftBinding = new Binding(nameof(baseZombie.X))
-            {
-                Source = baseZombie,
-                Mode = BindingMode.OneWay
-            };
-
-            var topBinding = new Binding(nameof(baseZombie.Y))
-            {
-                Source = baseZombie,
-                Mode = BindingMode.OneWay
-            };
-
-            zombieContainer.SetBinding(Canvas.LeftProperty, leftBinding);
-            zombieContainer.SetBinding(Canvas.TopProperty, topBinding);
-
-            GameField.Children.Add(zombieContainer);
+            baseZombie.KillRequested += BaseZombieOnKillRequested; 
+            
+            GameField.Children.Add(zombieCell);
         });
+    }
 
+    private void BaseZombieOnKillRequested(BaseZombie obj)
+    {
+        try
+        {
+            // #region agent log
+            try { System.IO.File.AppendAllText(@"c:\Users\levak\RiderProjects\DoraPlantsVsZombies\.cursor\debug.log", $"{{\"location\":\"GameView.cs:BaseZombieOnKillRequested\",\"message\":\"Removing zombie from visual tree\",\"zombieType\":\"{obj.GetType().Name}\",\"state\":\"{obj.State}\",\"timestamp\":{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}}}\n"); } catch { }
+            // #endregion
+            _viewModel.Zombies.Remove(obj);
+            var cell = _zombieCells[obj];
+            GameField.Children.Remove(cell);
+            _zombieCells.Remove(obj);
+        }
+        catch (Exception ex)
+        {
+            
+        }
 
     }
 
@@ -186,14 +171,14 @@ public partial class GameView : UserControl
     {
         _sunSpawnTimer.Stop();
         _zombieSpawnTimer.Stop();
-        _zombieActionTimer.Stop();
+        _actionTimer.Stop();
     }
     
     private void ViewModelOnContinued()
     {
         _sunSpawnTimer.Start();
         _zombieSpawnTimer.Start();
-        _zombieActionTimer.Start();
+        _actionTimer.Start();
     }
 
     private void CalculateCellSize()
@@ -249,9 +234,100 @@ public partial class GameView : UserControl
         if (e.Data.GetDataPresent(typeof(PlantType)) && sender is FieldCell fieldCell)
         {
             var plantType = (PlantType)e.Data.GetData(typeof(PlantType));
-            fieldCell.PlacePlant(plantType);
+            var plant = fieldCell.PlacePlant(plantType);
+            
+            _viewModel.Plants.Add(plant);
+            plant.KillRequested += PlantOnKillRequested;
+            plant.BulletSpawnRequested += PlantOnBulletSpawnRequested;
+            if (plant is PlantGenerator plantGenerator)
+            {
+                plantGenerator.SunSpawnRequested += PlantGeneratorOnSunSpawnRequested;
+            }
+            
             _viewModel.PlacePlant(plantType, fieldCell.Row, fieldCell.Column);
             HideDragPreview();
+        }
+    }
+
+    private void PlantGeneratorOnSunSpawnRequested(PlantGenerator obj)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var sun = new Sun()
+            {
+                X = obj.Column * _cellSize + _cellSize / 2,
+                Y = obj.Row * _cellSize + _cellSize / 2,
+            };
+
+            var rnd = new Random();
+            sun.X += rnd.Next(0, (int)_cellSize / 4);
+            sun.Y += rnd.Next(0, (int)_cellSize / 4);
+            
+            _viewModel.Suns.Add(sun);
+
+            var sunCell = new SunCell(sun);
+            
+            sunCell.MouseLeftButtonDown += (s, e) =>
+            {
+                var pos = e.GetPosition(GameField);
+                _viewModel.PickupSun(pos.X, pos.Y);
+                GameField.Children.Remove(sunCell);
+                _sunCells.Remove(sun);
+            };
+            
+            Canvas.SetTop(sunCell, sun.Y);
+            Canvas.SetLeft(sunCell, sun.X);
+            _viewModel.Suns.Add(sun);
+            GameField.Children.Add(sunCell);
+            _sunCells.Add(sun, sunCell);
+        });
+    }
+
+    private void PlantOnKillRequested(BasePlant plant)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            _viewModel.Plants.Remove(plant);
+        });
+    }
+
+    private void PlantOnBulletSpawnRequested(BasePlant plant)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var bullet = new Bullet()
+            {
+                ParentPlantType = plant.Type,
+                Row = plant.Row,
+                X = plant.Column * _cellSize
+            };
+            bullet.KillRequested += BulletOnKillRequested;
+            _viewModel.Bullets.Add(bullet);
+
+            var bulletCell = new BulletCell(bullet);
+            Canvas.SetTop(bulletCell, plant.Row * _cellSize + _cellSize * 0.25);
+            GameField.Children.Add(bulletCell);
+
+            _bulletCells.Add(bullet, bulletCell);
+        });
+    }
+
+    private void BulletOnKillRequested(Bullet obj)
+    {
+        try
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _viewModel.Bullets.Remove(obj);
+                var cell = _bulletCells[obj];
+                GameField.Children.Remove(cell);
+                _bulletCells.Remove(obj);
+            });
+
+        }
+        catch (Exception ex)
+        {
+            
         }
     }
 
@@ -268,7 +344,25 @@ public partial class GameView : UserControl
     private void SetupEventHandlers()
     {
         _viewModel.Plants.CollectionChanged += (s, e) => RenderGame();
-        _viewModel.Zombies.CollectionChanged += (s, e) => RenderGame();
+        _viewModel.Zombies.CollectionChanged += (s, e) =>
+        {
+            // Remove ZombieCells when zombies are removed
+            if (e.OldItems != null)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    foreach (BaseZombie zombie in e.OldItems)
+                    {
+                        if (_zombieCells.TryGetValue(zombie, out var zombieCell))
+                        {
+                            GameField.Children.Remove(zombieCell);
+                            _zombieCells.Remove(zombie);
+                        }
+                    }
+                });
+            }
+            RenderGame();
+        };
         _viewModel.Bullets.CollectionChanged += (s, e) => RenderGame();
         _viewModel.Suns.CollectionChanged += (s, e) => RenderGame();
         

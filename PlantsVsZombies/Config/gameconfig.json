@@ -9,14 +9,16 @@
       "Cost": 100,
       "ShootDelay": 1.5,
       "BulletsPerSpray": 1,
-      "BulletSpeed": 500
+      "BulletSpeed": 500,
+      "BulletDamage" : 20
     },
     "Shooter2": {
       "Health": 100,
       "Cost": 200,
       "ShootDelay": 1.5,
       "BulletsPerSpray": 2,
-      "BulletSpeed": 500
+      "BulletSpeed": 500,
+      "BulletDamage" : 1
     },
     "Shield": {
       "Health": 700,

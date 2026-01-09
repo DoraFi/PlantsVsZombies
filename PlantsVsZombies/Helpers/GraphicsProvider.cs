@@ -36,6 +36,8 @@ public static class GraphicsProvider
         ],
         _ => throw new ArgumentOutOfRangeException(nameof(plantType), plantType, null)
     };
+    
+    public static BitmapImage GetSunImage() => new BitmapImage(new Uri("pack://application:,,,/Assets/Icons/sun.png"));
 
     public static BitmapImage GetZombieImage(this ZombieType zombieType, LocationType locationType) => zombieType switch
     {

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using PlantsVsZombies.Services;
@@ -19,6 +20,17 @@ public abstract partial class BaseZombie : ObservableObject
         Y = CellSize * Row + 0.1 * CellSize;
         X = CellSize * Columns + 0.5 * CellSize;
     }
+
+    public event Action<BaseZombie>? KillRequested;
+    public void Kill()
+    {
+        if (_isKillRequested)
+            return;
+        _isKillRequested = true;
+        KillRequested?.Invoke(this);
+    }
+
+    private bool _isKillRequested = false;
     
     public void MakeAction()
     {
@@ -31,6 +43,7 @@ public abstract partial class BaseZombie : ObservableObject
             CurrentFieldCell.Plant.Health -= Damage / ConfigService.GetConfig().Game.FPS;
             if (CurrentFieldCell.Plant.Health <= 0)
             {
+                CurrentFieldCell.Plant.Kill();
                 CurrentFieldCell.Plant = null;
             }
         }
@@ -38,7 +51,7 @@ public abstract partial class BaseZombie : ObservableObject
         else
         {
             X -= Speed * CellSize / 120.0 / ConfigService.GetConfig().Game.FPS;
-            var currentColumn = (int)Math.Ceiling(X / CellSize);
+            var currentColumn = (int)Math.Ceiling((X + 0.5 * CellSize) / CellSize);
             if (currentColumn <= Columns && currentColumn >= 1)
             {
                 CurrentFieldCell = _fieldCellsOnRow[currentColumn - 1];
@@ -51,7 +64,7 @@ public abstract partial class BaseZombie : ObservableObject
     
     [ObservableProperty]
     private double _health;
-    
+
     public double MaxHealth { get; protected set; }
     
     [ObservableProperty]
@@ -65,6 +78,13 @@ public abstract partial class BaseZombie : ObservableObject
     
     [ObservableProperty] 
     private ZombieState _state;
+    
+    partial void OnStateChanged(ZombieState value)
+    {
+        // #region agent log
+        try { System.IO.File.AppendAllText(@"c:\Users\levak\RiderProjects\DoraPlantsVsZombies\.cursor\debug.log", $"{{\"location\":\"BaseZombie.cs:OnStateChanged\",\"message\":\"State property changed\",\"newState\":\"{value}\",\"zombieType\":\"{GetType().Name}\",\"timestamp\":{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}}}\n"); } catch { }
+        // #endregion
+    }
     
     public ZombieType Type { get; set; }
     

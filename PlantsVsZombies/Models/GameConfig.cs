@@ -18,9 +18,10 @@ public class PlantConfig
 {
     public int Health { get; set; }
     public int Cost { get; set; }
-    public double? ShootDelay { get; set; }
-    public int? BulletsPerSpray { get; set; }
-    public double? BulletSpeed { get; set; }
+    public double ShootDelay { get; set; }
+    public int BulletsPerSpray { get; set; }
+    public double BulletSpeed { get; set; }
+    public double BulletDamage { get; set; }
     public double? SunGenerationInterval { get; set; }
     public double? SunDropRange { get; set; }
     public int? SunValue { get; set; }

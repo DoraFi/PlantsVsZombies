@@ -1,5 +1,6 @@
 using System.Windows.Media.Imaging;
 using PlantsVsZombies.Helpers;
+using PlantsVsZombies.Models.Zombie;
 using PlantsVsZombies.Services;
 
 namespace PlantsVsZombies.Models.Plant;
@@ -16,7 +17,12 @@ public class PlantShield : BasePlant
     }
     
     public BitmapImage ShieldImageSource { get; }
-    
+
+    public override void MakeAction(IEnumerable<BaseZombie> zombies)
+    {
+        
+    }
+
     public override PlantType Type { get; } = PlantType.Shield;
     public override string Title { get; } = "Щит";
 }

@@ -25,6 +25,12 @@ public partial class MainMenuViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private void OpenInfoView()
+    {
+        NavigationService.Instance.NavigateTo(new GameInfoViewModel());
+    }
+
+    [RelayCommand]
     private void StartNewGame()
     {
         NavigationService.Instance.NavigateTo(new StartNewGameViewModel());

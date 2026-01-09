@@ -86,6 +86,8 @@
         <Resource Include="Assets\Icons\startNewGameBackground.png" />
         <None Remove="Assets\Icons\mainBack.jpg" />
         <Resource Include="Assets\Icons\mainBack.jpg" />
+        <None Remove="Assets\Icons\Help.jpg" />
+        <Resource Include="Assets\Icons\Help.jpg" />
     </ItemGroup>
 
     <ItemGroup>

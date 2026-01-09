@@ -25,6 +25,7 @@ public partial class MainWindow : Window
         UserControl? view = viewModel switch
         {
             SignInViewModel => new SignInView(),
+            GameInfoViewModel => new GameInfoView(),
             SignUpViewModel => new SignUpView(),
             MainMenuViewModel => new MainMenuView { DataContext = (MainMenuViewModel)viewModel },
             StartNewGameViewModel => new StartNewGameView { DataContext = (StartNewGameViewModel)viewModel },

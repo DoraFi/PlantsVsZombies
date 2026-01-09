@@ -16,8 +16,8 @@ public class SunCell : Image
     
     public SunCell(Sun sun)
     {
-        Width = 48;
-        Height = 48;
+        Width = 64;
+        Height = 64;
         RenderTransformOrigin = new Point(0.5, 0.5);
         Cursor = System.Windows.Input.Cursors.Hand;
         Opacity = 0; // Start invisible for fade-in animation

@@ -299,7 +299,7 @@ public partial class GameView : UserControl
             {
                 ParentPlantType = plant.Type,
                 Row = plant.Row,
-                X = plant.Column * _cellSize
+                X = plant.Column * _cellSize + _cellSize / 2,
             };
             bullet.KillRequested += BulletOnKillRequested;
             _viewModel.Bullets.Add(bullet);

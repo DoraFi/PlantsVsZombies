@@ -38,7 +38,7 @@ public partial class Bullet : ObservableObject
         if (closestZombie != null)
         {
             var diff = closestZombie.X - X;
-            if (diff <= 4 * _speed / ConfigService.GetConfig().Game.FPS)
+            if (diff <= 2 * _speed / ConfigService.GetConfig().Game.FPS)
             {
                 closestZombie.Health -= _damage;
                 if (!_isKillRequested)

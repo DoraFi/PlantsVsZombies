@@ -83,6 +83,7 @@ public partial class GameViewModel : BaseViewModel
     private void ContinueGame()
     {
         IsMenuVisible = false;
+        Continued?.Invoke();
     }
 
     [RelayCommand]
@@ -150,10 +151,10 @@ public partial class GameViewModel : BaseViewModel
         }
     }
 
-    public void PickupSun(double x, double y)
+    public void PickupSun(Sun sun)
     {
         var currentTime = (DateTime.Now - _startTime).TotalSeconds;
-        if (_gameService.PickupSun(Session, x, y, currentTime))
+        if (_gameService.PickupSun(Session, sun, currentTime))
         {
             OnPropertyChanged(nameof(Suns));
             OnPropertyChanged(nameof(Session));

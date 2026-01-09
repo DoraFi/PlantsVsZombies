@@ -399,20 +399,11 @@ public class GameService
         }
     }
 
-    public bool PickupSun(GameSession session, double x, double y, double currentTime)
+    public bool PickupSun(GameSession session, Sun sun, double currentTime)
     {
-        var sun = session.Suns.FirstOrDefault(s =>
-            Math.Abs(s.X - x) < 30 && Math.Abs(s.Y - y) < 30 &&
-            currentTime - s.SpawnTime < _config.Game.SunPickupTimeout);
-
-        if (sun != null)
-        {
-            session.Suns.Remove(sun);
-            session.SunBalance += _config.Game.SunValue;
-            return true;
-        }
-
-        return false;
+        session.Suns.Remove(sun);
+        session.SunBalance += _config.Game.SunValue;
+        return true;
     }
 
     public PlantConfig GetPlantConfig(PlantType type)

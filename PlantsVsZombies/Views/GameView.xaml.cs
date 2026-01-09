@@ -270,7 +270,7 @@ public partial class GameView : UserControl
             sunCell.MouseLeftButtonDown += (s, e) =>
             {
                 var pos = e.GetPosition(GameField);
-                _viewModel.PickupSun(pos.X, pos.Y);
+                _viewModel.PickupSun(sun);
                 GameField.Children.Remove(sunCell);
                 _sunCells.Remove(sun);
             };
@@ -457,6 +457,7 @@ public partial class GameView : UserControl
     private void RenderGame()
     {
         return;
+        /*
         Application.Current.Dispatcher.Invoke(() =>
         {
             // Clear previous game objects (keep grid lines)
@@ -520,16 +521,7 @@ public partial class GameView : UserControl
             {
                 var bulletVisual = new Image()
                 {
-                    /*
-                    Source = bullet.ParentPlantType switch
-                    {
-                        PlantType.Shooter1 => new BitmapImage(
-                            new Uri("pack://application:,,,/Assets/Icons/shooter1_ball.png")),
-                        PlantType.Shooter2 => new BitmapImage(
-                            new Uri("pack://application:,,,/Assets/Icons/shooter2_ball.png")),
-                        _ => throw new NotImplementedException(),
-                    },
-                    */
+             
                     Width = 24,
                     Height = 24,
                 };
@@ -563,6 +555,7 @@ public partial class GameView : UserControl
                 GameField.Children.Add(sunVisual);
             }
         });
+        */
     }
     
     private Brush GetPlantColor(PlantType type)

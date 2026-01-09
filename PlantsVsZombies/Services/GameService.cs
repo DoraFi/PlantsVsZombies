@@ -64,6 +64,9 @@ public class GameService
 
     public void UpdateGame(GameSession session, double currentTime, double deltaTime, double cellSize)
     {
+        // Check for game over (zombies reached the house)
+        CheckGameOver(session);
+        
         // Update score
         session.Score += deltaTime;
         
@@ -108,7 +111,8 @@ public class GameService
 
     private void CheckGameOver(GameSession session)
     {
-        if (session.Zombies.Any(z => z.X <= 0))
+        // Check if any living zombie has reached the house (X <= 0)
+        if (session.Zombies.Any(z => z.X <= 0 && z.State != ZombieState.Dead))
         {
             session.Score = -1; // Game over marker
         }

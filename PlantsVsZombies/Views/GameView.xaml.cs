@@ -98,28 +98,37 @@ public partial class GameView : UserControl
 
     private void SpawnZombie(int row, ZombieType zombieType)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        try
         {
-            BaseZombie baseZombie = zombieType switch
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                ZombieType.ZombieBoy => new ZombieBoy(_fieldCells.Where(cell => cell.Row == row).ToList(), _columns, row, _cellSize, _viewModel.Session.Location),
-                ZombieType.ZombieGirl => new ZombieGirl(_fieldCells.Where(cell => cell.Row == row).ToList(),_columns, row, _cellSize, _viewModel.Session.Location),
-                _ => throw new ArgumentOutOfRangeException(nameof(zombieType), zombieType, null)
-            };
-            
-            _viewModel.Zombies.Add(baseZombie);
+                BaseZombie baseZombie = zombieType switch
+                {
+                    ZombieType.ZombieBoy => new ZombieBoy(_fieldCells.Where(cell => cell.Row == row).ToList(), _columns,
+                        row, _cellSize, _viewModel.Session.Location),
+                    ZombieType.ZombieGirl => new ZombieGirl(_fieldCells.Where(cell => cell.Row == row).ToList(),
+                        _columns, row, _cellSize, _viewModel.Session.Location),
+                    _ => throw new ArgumentOutOfRangeException(nameof(zombieType), zombieType, null)
+                };
 
-            // Create ZombieCell and set the zombie
-            var zombieCell = new ZombieCell(_cellSize);
-            zombieCell.SetZombie(baseZombie);
+                _viewModel.Zombies.Add(baseZombie);
 
-            // Store mapping for cleanup
-            _zombieCells[baseZombie] = zombieCell;
+                // Create ZombieCell and set the zombie
+                var zombieCell = new ZombieCell(_cellSize);
+                zombieCell.SetZombie(baseZombie);
+
+                // Store mapping for cleanup
+                _zombieCells[baseZombie] = zombieCell;
+
+                baseZombie.KillRequested += BaseZombieOnKillRequested;
+
+                GameField.Children.Add(zombieCell);
+            });
+        }
+        catch (Exception ex)
+        {
             
-            baseZombie.KillRequested += BaseZombieOnKillRequested; 
-            
-            GameField.Children.Add(zombieCell);
-        });
+        }
     }
 
     private void BaseZombieOnKillRequested(BaseZombie obj)
@@ -170,7 +179,7 @@ public partial class GameView : UserControl
 
     private void CalculateCellSize()
     {
-        _cellSize = 150;
+        _cellSize = 120;
         _viewModel.CellSize = _cellSize;
     }
 
@@ -398,14 +407,9 @@ public partial class GameView : UserControl
             {
                 _isDragging = true;
                 
-                // Show drag preview
-                Debug.WriteLine(DateTime.Now.ToString() + nameof(ShowDragPreview));
-                ShowDragPreview(_draggedPlant, currentPoint);
-              
                 DragDrop.DoDragDrop(element, _draggedPlant.Type, DragDropEffects.Move);
                 
                 // Hide drag preview
-                Debug.WriteLine(DateTime.Now.ToString() + nameof(HideDragPreview));
                 HideDragPreview();
                 
                 element.ReleaseMouseCapture();
@@ -414,46 +418,12 @@ public partial class GameView : UserControl
             }
         }
     }
-
-    private void ShowDragPreview(BasePlant basePlant, Point position)
-    {
-        DragPreview.Visibility = Visibility.Visible;
-        
-        DragPreview.Width = _cellSize;
-        DragPreview.Height = _cellSize;
-        DragPreview.PlacePlant(basePlant.Type);
-        
-        // Position near cursor initially
-        UpdateDragPreviewPosition(position);
-    }
     
-    private void UpdateDragPreviewPosition(Point position)
-    {
-        if (DragPreview.Visibility == Visibility.Visible)
-        {
-            // Show which cell it will be placed in
-            var fieldPos = Mouse.GetPosition(GameField);
-            var row = (int)(fieldPos.Y / _cellSize);
-            var col = (int)(fieldPos.X / _cellSize);
-            
-            if (row >= 0 && row < _config.Field.Rows && col >= 0 && col < _config.Field.Columns)
-            {
-                // Show preview at the cell position
-                Canvas.SetLeft(DragPreview, col * _cellSize);
-                Canvas.SetTop(DragPreview, row * _cellSize);
-            }
-            else
-            {
-                // Position near cursor if outside field
-                Canvas.SetLeft(DragPreview, position.X - _cellSize / 2);
-                Canvas.SetTop(DragPreview, position.Y - _cellSize / 2);
-            }
-        }
-    }
+    
     
     private void HideDragPreview()
     {
-        DragPreview.Visibility = Visibility.Collapsed;
+        
     }
 
     private void PlantShopItem_MouseLeave(object sender, MouseEventArgs e)

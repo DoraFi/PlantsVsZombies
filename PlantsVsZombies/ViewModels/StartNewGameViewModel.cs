@@ -28,7 +28,7 @@ public partial class StartNewGameViewModel : BaseViewModel
         
         var gameService = new Services.GameService();
         
-        var session = gameService.CreateNewGame(SelectedLocation, ConfigService.GetConfig().Game.InitialDifficulty);
+        var session = gameService.CreateNewGame(SelectedLocation, StartDifficulty);
         NavigationService.Instance.NavigateTo(new GameViewModel(session));
     }
     

@@ -167,15 +167,17 @@ public partial class GameViewModel : BaseViewModel
         }
     }
 
-    private void EndGame()
+    public void EndGame()
     {
         _gameTimer.Stop();
-        if (Session.Score > 0)
+        var finalScore = Session.Score > 0 ? Session.Score : 0;
+        var viewModel = new GameOverViewModel()
         {
-            UserService.UpdateUserScore(Session.Score);
-        }
+            FinalScore = finalScore,
+        };
+        UserService.UpdateUserScore(finalScore);
         UserService.ClearGameSession();
-        NavigationService.Instance.NavigateTo(new MainMenuViewModel());
+        NavigationService.Instance.NavigateTo(viewModel);
     }
 
     private void ShowBestScoreNotification()

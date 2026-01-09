@@ -20,7 +20,7 @@ public partial class SignUpViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = "Please enter login and password";
+            ErrorMessage = "Пожалуйста, введите логин или пароль";
             return;
         }
 
@@ -35,7 +35,7 @@ public partial class SignUpViewModel : BaseViewModel
         }
         else
         {
-            ErrorMessage = "User already exists";
+            ErrorMessage = "Пользователь уже существует";
         }
     }
 

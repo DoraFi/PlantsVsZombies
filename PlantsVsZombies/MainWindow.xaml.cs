@@ -29,6 +29,7 @@ public partial class MainWindow : Window
             MainMenuViewModel => new MainMenuView { DataContext = (MainMenuViewModel)viewModel },
             StartNewGameViewModel => new StartNewGameView { DataContext = (StartNewGameViewModel)viewModel },
             GameViewModel => new GameView((GameViewModel)viewModel),
+            GameOverViewModel => new GameOverView { DataContext = (GameOverViewModel)viewModel },
             _ => null
         };
 

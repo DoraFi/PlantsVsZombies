@@ -20,7 +20,7 @@ public partial class SignInViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = "Please enter login and password";
+            ErrorMessage = "Введите логин или пароль!";
             return;
         }
 
@@ -31,7 +31,7 @@ public partial class SignInViewModel : BaseViewModel
         }
         else
         {
-            ErrorMessage = "Invalid login or password";
+            ErrorMessage = "Неправильный логин или пароль!";
         }
     }
 

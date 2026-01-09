@@ -66,10 +66,10 @@
   <Game>
     <ZombieSpawnMinDelay>0.2</ZombieSpawnMinDelay>
     <SunFallInterval>10.0</SunFallInterval>
-    <SunValue>500</SunValue>
+    <SunValue>50</SunValue>
     <SunPickupTimeout>7.0</SunPickupTimeout>
     <DifficultyIncreaseInterval>30.0</DifficultyIncreaseInterval>
-    <InitialDifficulty>1</InitialDifficulty>
+    <InitialDifficulty>20</InitialDifficulty>
     <MaxDifficulty>10</MaxDifficulty>
     <ZombiesPerDifficulty>2</ZombiesPerDifficulty>
     <FPS>60</FPS>
